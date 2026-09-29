@@ -1,9 +1,9 @@
 # Build output / local trees
-openwrt-mr600/
-bin/
-build_dir/
-staging_dir/
-tmp/
+/openwrt-mr600/
+/bin/
+/build_dir/
+/staging_dir/
+/tmp/
 *.bin
 *.img
 *.tar.gz
