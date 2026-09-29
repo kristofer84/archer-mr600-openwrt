@@ -86,8 +86,11 @@ echo "==> variant"
 # present now: the file can be moved aside, and a tree can be configured by something other
 # than build.sh. .config.seed.local.applied is build.sh's record of what it applied, and the
 # .config is what survived it - check both, so the statement is true of the artifact.
+#
+# The record's existence is what makes it a local variant, not whether it enables anything:
+# a seed that only disables packages changes the image just as much.
 local_seed="$TREE/.config.seed.local.applied"
-if [ -f "$local_seed" ] && grep -q '=y' "$local_seed"; then
+if [ -f "$local_seed" ]; then
 	missing=0
 	while read -r line; do
 		case "$line" in
@@ -95,7 +98,7 @@ if [ -f "$local_seed" ] && grep -q '=y' "$local_seed"; then
 		esac
 	done < "$local_seed"
 	if [ "$missing" = 0 ]; then
-		echo "   note    LOCAL variant: config.seed.local was applied and its packages are in .config"
+		echo "   note    LOCAL variant: config.seed.local was applied; every package it enables is in .config"
 	else
 		bad "a local seed was applied but its packages are not all in .config - a release must not ship this"
 	fi
