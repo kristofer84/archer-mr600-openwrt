@@ -85,8 +85,10 @@ touch .config
 cat "$KIT/config.seed" >> .config
 # Optional local variant: extra packages without touching the tracked, published seed.
 if [ -f "$KIT/config.seed.local" ]; then
-  echo "   config.seed.local present - adding its packages"
+  echo "   LOCAL VARIANT: applying config.seed.local"
   cat "$KIT/config.seed.local" >> .config
+else
+  echo "   GENERIC image: no config.seed.local present (this is the published variant)"
 fi
 make defconfig
 grep -q "CONFIG_TARGET_ramips_mt7621=y" .config || {

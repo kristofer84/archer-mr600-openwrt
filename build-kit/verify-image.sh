@@ -81,6 +81,13 @@ awk -F'\t' '$1 == "24008" { print $2 }' "$BLF/etc/mr600-apn-table" | grep -q . |
 	bad "the 24008 row has no APN"
 ok "the APN reaches uci"
 
+echo "==> variant"
+if [ -f "$KIT/config.seed.local" ]; then
+	echo "   note    config.seed.local is present - this is a LOCAL variant, not the published generic image"
+else
+	echo "   ok      no config.seed.local - the published generic image"
+fi
+
 echo "==> calibration policy"
 if [ -e "$BLF/root/radio-cal.bin" ]; then
 	echo "   note    a calibration blob is baked in as a fallback (non-generic build)"
