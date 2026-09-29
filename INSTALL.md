@@ -280,6 +280,28 @@ mtd write stock-firmware.bin firmware
 Then reboot. Your unit's WiFi calibration at flash `0xff0000` is outside these two partitions and
 was preserved by the install (§7), so it is not part of the restore.
 
+### Restore from the running OpenWrt (no initramfs boot)
+
+If the installed OpenWrt still boots and you can reach it over SSH, you can skip §3-§4 and write
+the concatenated stock image directly - the `firmware` partition is writable and `mtd` is present
+on the running system. On your PC:
+
+```sh
+cat mtd1-kernel.bin mtd2-rootfs.bin > stock-firmware.bin   # exactly 16,384,000 B
+```
+
+Copy it to the router, verify its sha256 matches, then on the router:
+
+```sh
+mtd write /tmp/stock-firmware.bin firmware
+mtd verify /tmp/stock-firmware.bin firmware   # must print "Success" before you reboot
+reboot
+```
+
+This writes over a mounted rootfs and overlay, so it is marginally less safe than the initramfs
+route above - but it has been done on hardware and verified byte-for-byte. Prefer the initramfs
+route if anything about the running system is in doubt.
+
 ### If U-Boot will not reach a prompt
 
 U-Boot itself is rarely damaged by an image write of the `firmware` partition. If the device will

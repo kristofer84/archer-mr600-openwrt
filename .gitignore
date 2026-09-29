@@ -24,4 +24,3 @@ rootfs_*/
 .env
 __pycache__/
 *.pyc
-build-kit/files/usr/bin/at-tty
