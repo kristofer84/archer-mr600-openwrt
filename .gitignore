@@ -24,3 +24,4 @@ rootfs_*/
 .env
 __pycache__/
 *.pyc
+build-kit/config.seed.local
