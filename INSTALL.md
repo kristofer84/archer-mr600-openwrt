@@ -58,6 +58,10 @@ gh attestation verify openwrt-ramips-mt7621-tplink_mr600-v1-eu-initramfs-kernel.
 ```
 
 The output names the commit and workflow run; that run's log shows exactly how it was built.
+`gh attestation` needs GitHub CLI 2.49 or newer; older versions (e.g. Debian's 2.46) report
+`unknown command "attestation"`. The run log also prints the exact OpenWrt and feed commits the
+image was built from (`openwrt at ...`, `feed ... at ...`), pinned in
+[build-kit/upstream.lock](build-kit/upstream.lock).
 
 The released image is a **generic** build: it ships **no** WiFi calibration blob, so it contains
 no per-unit data. First boot keeps the target unit's own calibration (§7).
