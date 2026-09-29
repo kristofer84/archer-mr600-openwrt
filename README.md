@@ -3,7 +3,9 @@
 Install OpenWrt on a stock Archer MR600 **v1 (EU)** and get the built-in LTE modem working
 automatically, without re-deriving anything.
 
-* **[INSTALL.md](INSTALL.md) - start here.** The linear, start-to-finish procedure.
+* **[INSTALL.md](INSTALL.md) - start here.** The linear, start-to-finish procedure (opens the case).
+* **[REMOTE-INSTALL.md](REMOTE-INSTALL.md) - no case open.** Install over the LAN by way of the
+  stock firmware's factory daemon. Verified on hardware; use it only if you cannot open the case.
 * **[build-kit/](build-kit/)** - build the image from source, or rebuild it reproducibly.
 * **[Releases](../../releases)** - prebuilt images, so you can skip the build.
 
@@ -16,8 +18,12 @@ One image is safe on any MR600 v1 - it keeps the unit's own WiFi calibration.
 
 ## What it costs
 
-* **You must open the case.** The UART header is on the back of the PCB, and opening is
-  destructive: a screw is hidden under the front silver fin. This is the one physical price.
+* **The documented install opens the case**
+  ([annotated UART header](images/archer_mr600_v1_uart.jpg),
+  [motherboard](images/archer_mr600_v1_mb.jpg)). The header is on the back of the PCB, and opening
+  is destructive: a screw is hidden under the front silver fin. This is the one physical price.
+  [REMOTE-INSTALL.md](REMOTE-INSTALL.md) is the no-case alternative, at the cost of relying on the
+  stock firmware's own factory daemon.
 * **The LTE recipe is verified on one physical unit** (the author's). The install path itself is
   UART + TFTP + `sysupgrade`, which is standard.
 * **WiFi as an AP is not fully verified.** The radios load with firmware; the stock OpenWrt

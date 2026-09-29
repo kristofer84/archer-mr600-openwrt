@@ -64,14 +64,20 @@ Opening the case is **destructive**: a screw is hidden under the front silver pl
 fin/cover tend to break when removed. This is the accepted cost of a reliable install. The UART
 header is on the **back** of the PCB.
 
-Pinout, measured on hardware (the header on the back means pin numbers can read **mirrored** -
-anchor on **GND = pin 2**, never on a pin-1 marking):
+| ![motherboard](images/archer_mr600_v1_mb.jpg) | ![UART header](images/archer_mr600_v1_uart.jpg) |
+|---|---|
+| the board, UART header annotated | close-up of the four-pin header |
+
+Pinout. The header is on the back, so pin numbers can read **mirrored** - anchor on **GND**, never
+on a pin-1 silkscreen. The photos label the four holes **TX / RX / GND / VCC** top to bottom; the
+table numbers them from the VCC end, which matches the measured pins:
 
 | pin | signal |
 |---|---|
+| 1 | **VCC** - leave unconnected |
 | 2 | **GND** |
+| 3 | **router RX** (your adapter's TX → this pin) |
 | 4 | **console TX** (router → your adapter's RX) |
-| 1 or 3 | **router RX** (your adapter's TX → this pin). Not recorded which of the two; see below. |
 
 Wiring to **read** the console:
 
