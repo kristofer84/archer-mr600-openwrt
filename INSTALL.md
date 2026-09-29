@@ -245,9 +245,20 @@ Work down this list - each check rules out one thing:
    link works - the module consumes it and does not store it.
 2. **Radio on.** `AT+CFUN?` must be `1`. The init script sets it; if the AT port was not ready it
    could not - check `logread | grep 'lte:'` for a warning.
-3. **QMI alive.** `uqmi -d /dev/cdc-wdm0 --get-serving-system`. If that fails while AT answers,
-   the module's QMI processor is wedged and needs a **full power cycle** (unplug power, not just a
-   reboot).
+3. **QMI alive.** `uqmi -d /dev/cdc-wdm0 --get-serving-system`. If that fails while AT answers, the
+   module's QMI processor is wedged. Try a **USB re-enumeration** first:
+
+   ```sh
+   echo 0 > /sys/bus/usb/devices/1-1/authorized
+   echo 1 > /sys/bus/usb/devices/1-1/authorized
+   ```
+
+   A reboot does this too - `lte-reset` re-enumerates on boot, so an ordinary reboot clears a wedge
+   it caused. `authorized=0` removes the device *asynchronously* and the old `/dev/cdc-wdm0` node
+   lingers, so wait for the node to go, come back, and for `--get-serving-system` to answer -
+   `[ -c /dev/cdc-wdm0 ]` is **not** a readiness test. If the re-enumeration does not clear it -
+   something drove it there, classically ModemManager or an unprepared `qmi` proto - only a **full
+   power cycle** does: unplug the power, not just a reboot. `AT+CFUN=1,1` will not clear it either.
 4. **Firewall.** `uci show firewall | grep 'zone\[1\].network'` must include `wwan`, or LAN
    clients get no internet even though the router does.
 5. **`raw_ip`.** `cat /sys/class/net/wwan0/qmi/raw_ip` should be `Y`; the init script sets it.
