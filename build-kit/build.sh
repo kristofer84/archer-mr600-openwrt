@@ -87,8 +87,12 @@ cat "$KIT/config.seed" >> .config
 if [ -f "$KIT/config.seed.local" ]; then
   echo "   LOCAL VARIANT: applying config.seed.local"
   cat "$KIT/config.seed.local" >> .config
+  # Record what was applied, so verify-image.sh can judge the artifact later even if the
+  # seed file has moved on. The .config says what survived; this says what was intended.
+  cp "$KIT/config.seed.local" .config.seed.local.applied
 else
   echo "   GENERIC image: no config.seed.local present (this is the published variant)"
+  rm -f .config.seed.local.applied
 fi
 make defconfig
 grep -q "CONFIG_TARGET_ramips_mt7621=y" .config || {

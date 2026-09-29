@@ -82,10 +82,25 @@ awk -F'\t' '$1 == "24008" { print $2 }' "$BLF/etc/mr600-apn-table" | grep -q . |
 ok "the APN reaches uci"
 
 echo "==> variant"
-if [ -f "$KIT/config.seed.local" ]; then
-	echo "   note    config.seed.local is present - this is a LOCAL variant, not the published generic image"
+# Judged from what was seeded into THIS tree, not from whether the seed file happens to be
+# present now: the file can be moved aside, and a tree can be configured by something other
+# than build.sh. .config.seed.local.applied is build.sh's record of what it applied, and the
+# .config is what survived it - check both, so the statement is true of the artifact.
+local_seed="$TREE/.config.seed.local.applied"
+if [ -f "$local_seed" ] && grep -q '=y' "$local_seed"; then
+	missing=0
+	while read -r line; do
+		case "$line" in
+			CONFIG_*=y) grep -qxF "$line" "$TREE/.config" || missing=1 ;;
+		esac
+	done < "$local_seed"
+	if [ "$missing" = 0 ]; then
+		echo "   note    LOCAL variant: config.seed.local was applied and its packages are in .config"
+	else
+		bad "a local seed was applied but its packages are not all in .config - a release must not ship this"
+	fi
 else
-	echo "   ok      no config.seed.local - the published generic image"
+	echo "   ok      generic image: no config.seed.local was applied to this tree"
 fi
 
 echo "==> calibration policy"
