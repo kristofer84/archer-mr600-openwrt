@@ -11,6 +11,8 @@ set -euo pipefail
 
 KIT="$(cd "$(dirname "$0")" && pwd)"
 TREE="${TREE:-$HOME/openwrt-mr600}"
+# shellcheck source=upstream.lock
+. "$KIT/upstream.lock"
 
 echo "==> checking prerequisites"
 missing=0
@@ -27,10 +29,14 @@ echo "   ok"
 echo "==> clone or reuse $TREE"
 if [ ! -d "$TREE/.git" ]; then
   git clone https://git.openwrt.org/openwrt/openwrt.git "$TREE"
+  git -C "$TREE" -c advice.detachedHead=false checkout "$OPENWRT_COMMIT"
 else
   echo "   reusing existing checkout"
+  [ "$(git -C "$TREE" rev-parse HEAD)" = "$OPENWRT_COMMIT" ] ||
+    echo "   WARNING: $TREE is not at the pinned $OPENWRT_COMMIT (upstream.lock)" >&2
 fi
 cd "$TREE"
+echo "   openwrt at $(git rev-parse HEAD)"
 
 echo "==> apply PR #25074 (v1-additive, 4 files)"
 if git apply --check "$KIT/patches/0001-pr25074-v1-additive.patch" 2>/dev/null; then
@@ -57,8 +63,18 @@ echo "==> apply this project's changes"
 python3 "$KIT/apply-local-changes.py"
 
 echo "==> feeds (needed before the package symbols resolve)"
-[ -f feeds.conf.default ] && [ ! -f feeds.conf ] && cp feeds.conf.default feeds.conf
+# Written from upstream.lock, not copied from feeds.conf.default, so every feed is at a fixed commit.
+cat > feeds.conf <<FEEDS
+src-git packages https://git.openwrt.org/feed/packages.git^$FEED_PACKAGES
+src-git luci https://git.openwrt.org/project/luci.git^$FEED_LUCI
+src-git routing https://git.openwrt.org/feed/routing.git^$FEED_ROUTING
+src-git telephony https://git.openwrt.org/feed/telephony.git^$FEED_TELEPHONY
+src-git video https://github.com/openwrt/video.git^$FEED_VIDEO
+FEEDS
 ./scripts/feeds update -a
+for f in packages luci routing telephony video; do
+  echo "   feed $f at $(git -C "feeds/$f" rev-parse HEAD)"
+done
 ./scripts/feeds install -a
 
 echo "==> configure"

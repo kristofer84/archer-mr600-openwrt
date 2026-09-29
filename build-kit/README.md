@@ -12,7 +12,8 @@ cd build-kit
 # or:  TREE=/some/path ./build.sh
 ```
 
-It clones upstream OpenWrt, applies PR #25074, applies this kit's changes, seeds the config,
+It clones upstream OpenWrt at the commit pinned in [upstream.lock](upstream.lock) (the feeds are
+pinned there too), applies PR #25074, applies this kit's changes, seeds the config,
 fetches the feeds and builds. Expect roughly 20 GB of disk and a few hours; the toolchain download
 and build dominate, the target is quick after that.
 

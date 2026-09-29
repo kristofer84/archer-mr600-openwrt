@@ -1,0 +1,16 @@
+# Upstream revisions the build is pinned to. build.sh checks OpenWrt out at OPENWRT_COMMIT and
+# writes feeds.conf with each feed at its commit, so a build (and its CI provenance attestation)
+# names the exact source, instead of whatever main happened to be that hour.
+#
+# Why pinned: on 2026-09-29 core main added scanner-support (group "scanner") while the packages
+# feed's sane-backends still defined the same group, and every unpinned build failed at
+# "make defconfig" with "id of group scanner collides". These are the revisions the working
+# v0.1.1 build used (the last upstream commits before that run started, 09:37Z).
+#
+# Bumping: change a hash, build, TFTP-test the initramfs (INSTALL.md), then commit.
+OPENWRT_COMMIT=138fabb79f8d68d65e40c8b8d0c0494b19053d0f
+FEED_PACKAGES=059ba7d4fda5cb00f429f49b1061fb81e121456c
+FEED_LUCI=0818828b3bf7ccc71f9a45a34873fb63826a2802
+FEED_ROUTING=4b9891b9136259f93294a424507ed24c5e8c1cbd
+FEED_TELEPHONY=5d68d53c160a325ea9d03fce393e051573bcc736
+FEED_VIDEO=7dd5eba75d4b68785b4f7c5b3b086e6dfbd6644c
