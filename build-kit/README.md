@@ -247,10 +247,19 @@ and 64-bit atomics on 32-bit MIPS need `-latomic`.
 
 ## What is still uncertain
 
-* **How the vendor U-Boot sizes the initramfs load.** It parses the uImage header, so an initramfs
-  is not limited by the 2 MB kernel slot - read from the vendor's `cmd_bootm.c`, not exercised.
+* **How the vendor U-Boot sizes the initramfs load.** Upstream U-Boot's `bootm` takes the size from
+  the uImage header (`ih_size`), not from a partition size, so an initramfs should not be limited by
+  the stock 2 MB kernel slot. This is not exercised: booting an initramfs from flash was never
+  tried. It is also moot for the install, which boots the initramfs over TFTP and flashes
+  `factory.bin` remotely.
+* **`config.seed`** reproduces the intent, not a byte-copy of any particular `.config`; `build.sh`
+  appends it to `.config` and runs `make defconfig`.
+
+## What is verified
+
 * **The rootfs split in a raw write.** The PR declares one `firmware` partition at `0x20000` sized
-  `0xfa0000`. `tplink-v2-image -a 0x10000` aligns the rootfs to the next 64 KiB after the kernel,
-  so the squashfs magic sits at image offset determined by the kernel size - write `factory.bin` in
-  **one piece** at `0x20000`, do not re-use an old two-part split.
-* **`config.seed`** reproduces the intent, not a byte-copy of any particular `.config`.
+  `0xfa0000`, with `openwrt,offset = <512>` (DTS: `compatible = "openwrt,uimage"`).
+  `tplink-v2-image -a 0x10000` aligns the rootfs to the next 64 KiB after the kernel. In the
+  released image (16,318,464 B, `0xf90000`), the squashfs magic (`hsqs`) sits at **`0x370000`**
+  (3,604,480 B). Writing `factory.bin` in one piece at `0x20000` booted OpenWrt end to end. Do not
+  re-use an old two-part split.
