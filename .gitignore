@@ -1,0 +1,27 @@
+# Build output / local trees
+openwrt-mr600/
+bin/
+build_dir/
+staging_dir/
+tmp/
+*.bin
+*.img
+*.tar.gz
+*.zip
+
+# Per-unit vendor calibration and any device dump. MUST NOT be committed.
+# The default build is generic and ships no calibration; first boot keeps the
+# target unit's own radio region. Only build a blob for a unit whose region is
+# erased, and keep it out of git.
+files/root/radio-cal.bin
+build-kit/files/root/radio-cal.bin
+flash-*/
+conf*.bin
+MR600V1_*/
+rootfs_*/
+
+# Local tooling
+.env
+__pycache__/
+*.pyc
+build-kit/files/usr/bin/at-tty

@@ -1,0 +1,60 @@
+#!/bin/sh
+# First-boot configuration for the built-in LTE modem on the Archer MR600 v1.
+#
+# This is the configuration half. The mechanism lives in /etc/init.d/lte-reset
+# (which prepares the module before the network starts); both are described in
+# build-kit/README.md, "The LTE modem".
+#
+# Nothing here is per-unit: the APN is derived from the SIM at boot (MR600-apn-table).
+# The one thing you must never do is install ModemManager.
+
+[ "$(cat /tmp/sysinfo/board_name 2>/dev/null)" = "tplink,mr600-v1-eu" ] || exit 0
+
+# ModemManager is not installed (see config.seed), and it must stay that way: it takes
+# /dev/cdc-wdm0, and its probing drives this module's QMI processor into a state that only a
+# full power cycle clears (see build-kit/README.md, "The LTE modem"). Disable it defensively in
+# case an older image or a later opkg install put it back.
+if [ -x /etc/init.d/modemmanager ]; then
+	/etc/init.d/modemmanager stop
+	/etc/init.d/modemmanager disable
+	logger -t lte "ModemManager disabled (it wedges this modem)"
+fi
+
+# The LTE data interface.
+#
+#   /etc/init.d/lte-reset runs at START=18, before the network, and prepares the
+#   module: USB re-enumerate if its QMI is wedged, AT+CFUN=1 if the radio was
+#   left off, set the RAM-only APN over AT, and set raw_ip=Y while wwan0 is down.
+#
+#   The qmi proto then brings wwan0 up and takes a DHCP lease from the module's
+#   own default bearer. Note the address is NOT configured from QMI - the module
+#   is a DHCP server on the bearer, so the lease is what matters.
+#
+# CONFIGURE THE INTERFACE 02_network ALREADY MADE. The PR's board.d creates
+# `network.wwan0` (proto qmi, device /dev/cdc-wdm0, and the eth0+2 MAC), so this
+# script only adds what it lacks. Creating a *second* qmi interface on the same
+# device - as an earlier revision of this file did - puts two clients on one QMI
+# port; they fight, which pushes the module into its "SIM in illegal state ->
+# power-cycle" path and leaves it wedged, with wwan never coming up.
+uci set network.wwan0.proto='qmi'
+uci set network.wwan0.device='/dev/cdc-wdm0'
+uci set network.wwan0.pdptype='ipv4'
+# No APN is set here on purpose. The init script derives it from the SIM's home
+# network (MCC/MNC) using /etc/mr600-apn-table, so one image works on any carrier.
+# To force one anyway - an unlisted carrier, or a specific APN - uncomment:
+#uci set network.wwan0.apn=''
+uci set network.wwan0.auto='1'
+# Defensive: remove a duplicate if an older config left one behind.
+uci -q delete network.wwan
+uci commit network
+
+# Put the LTE interface in the wan firewall zone, so LAN clients are NATed out
+# the modem. Without this the router reaches the internet but nothing behind it
+# does. zone[1] is the stock 'wan' zone; assert that before touching it.
+if [ "$(uci -q get firewall.@zone[1].name)" = "wan" ]; then
+	uci -q del_list firewall.@zone[1].network='wwan0'
+	uci add_list firewall.@zone[1].network='wwan0'
+	uci commit firewall
+fi
+
+exit 0

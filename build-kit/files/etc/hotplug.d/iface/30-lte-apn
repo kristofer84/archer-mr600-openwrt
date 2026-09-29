@@ -1,0 +1,71 @@
+#!/bin/sh
+# A changed APN does not take effect on a live bearer. This module keeps the APN of the PDN it
+# already attached with, and a plain interface restart re-activates against the old one -
+# verified: a new PDN, a new address, and still the old APN. Only a detach/re-attach (a CFUN
+# cycle) makes it read the new value. So when uci's APN differs from the one the modem was
+# attached with, cycle the radio and bring the interface up again. That is why changing the APN
+# in LuCI interrupts the link for about a minute - and without this the field would look like it
+# did nothing at all.
+#
+# Runs on ifup, i.e. after the proto has finished, so nothing here overlaps the proto's work.
+# lte-reset writes the same mark at boot, and that is what keeps this quiet on a normal boot:
+# the boot's own fresh attach has already applied the APN.
+[ "$ACTION" = ifup ] || exit 0
+[ "$INTERFACE" = wwan0 ] || exit 0
+
+AT=/dev/ttyUSB2
+ATCMD=/usr/bin/at-tty
+CTL=/dev/cdc-wdm0
+MARK=/tmp/.lte-apn-reconciled
+LOCK=/tmp/.lte-apn.lock
+
+want=$(uci -q get network.wwan0.apn)
+[ -n "$want" ] || exit 0
+[ "$(cat "$MARK" 2>/dev/null)" = "$want" ] && exit 0
+[ -c "$AT" ] || exit 0
+[ -x "$ATCMD" ] || exit 0
+mkdir "$LOCK" 2>/dev/null || exit 0        # one reconcile at a time
+
+logger -t lte "APN changed to '$want'; re-attaching the module so the change takes effect"
+# Marked before the cycle, not after. The ifdown/ifup below fires another ifup, and by then this
+# has to look done - otherwise it would cycle the radio forever.
+echo "$want" > "$MARK"
+
+# Detached on purpose, and this is not a style choice. netifd dispatched this ifup, and calling
+# ifdown/ifup back into it from inside that dispatch ends with the interface holding an address
+# while netifd still calls it "down", so no route is installed and nothing can be reached
+# (observed). Backgrounding lets the dispatch return first, and the restart below then happens
+# with netifd idle for wwan0.
+(
+	trap 'rmdir "$LOCK" 2>/dev/null' EXIT
+
+	"$ATCMD" "$AT" 115200 'AT+CFUN=0' >/dev/null 2>&1
+	sleep 5
+	"$ATCMD" "$AT" 115200 'AT+CFUN=1' >/dev/null 2>&1
+
+	# Wait for registration, or the proto starts against an unregistered module and gives up
+	# with "Unable to connect IPv4" - the same race lte-reset avoids at boot.
+	i=0
+	while [ $i -lt 20 ]; do
+		uqmi -s -d "$CTL" -t 3000 --get-serving-system 2>/dev/null |
+			grep -q '"registration":"registered"' && break
+		sleep 3; i=$((i+1))
+	done
+
+	ifdown wwan0
+	sleep 3
+	ifup wwan0
+
+	# Say whether it worked, and check both halves: the failure mode above is an address with
+	# the interface still down, so "has an address" alone would call that a success.
+	i=0
+	while [ $i -lt 12 ]; do
+		if ifstatus wwan0 2>/dev/null | grep -q '"up": true' &&
+		   ip -4 addr show wwan0 2>/dev/null | grep -q inet; then
+			logger -t lte "re-attached with APN '$want'"
+			exit 0
+		fi
+		sleep 10; i=$((i+1))
+	done
+	logger -t lte "warning: APN '$want' applied but wwan0 did not come back up"
+) >/dev/null 2>&1 &

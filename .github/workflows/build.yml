@@ -1,0 +1,89 @@
+name: build
+
+# Builds the generic OpenWrt image for the MR600 v1 (EU) and, on a tag, attaches it to a
+# release. This is how the prebuilt images in Releases are produced, reproducibly, with no
+# vendor calibration data in the artifact.
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  image:
+    runs-on: ubuntu-latest
+    # An OpenWrt build from scratch is ~2-4 h on a 4-core runner. The GitHub-hosted job limit
+    # is 6 h; if this ever times out, re-run it (the tree is not cached) or use a larger runner.
+    timeout-minutes: 350
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # The runner only has ~14 GB free by default; an OpenWrt build wants ~20 GB+.
+      - name: Free disk space
+        uses: jlumbroso/free-disk-space@v1.3.1
+        with:
+          tool-cache: true
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: true
+          swap-storage: true
+
+      - name: Show disk space
+        run: df -h /
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            build-essential clang flex bison g++ gawk gettext git \
+            libncurses-dev libssl-dev python3 rsync unzip zlib1g-dev \
+            file wget time
+
+      - name: Build
+        env:
+          TREE: ${{ runner.temp }}/openwrt-mr600
+        run: ./build-kit/build.sh
+
+      # Safety net: the released image must be a GENERIC build. A baked calibration blob
+      # would publish one unit's RF calibration and MAC seed.
+      - name: Assert the image carries no calibration blob
+        env:
+          TREE: ${{ runner.temp }}/openwrt-mr600
+        run: |
+          if [ -e "$TREE/target/linux/ramips/mt7621/base-files/root/radio-cal.bin" ]; then
+            echo "::error::radio-cal.bin is baked into the image; refusing to publish it"
+            exit 1
+          fi
+          echo "generic build ok - no calibration blob present"
+
+      - name: Collect artifacts and digests
+        env:
+          TREE: ${{ runner.temp }}/openwrt-mr600
+        run: |
+          mkdir -p out
+          cp "$TREE"/bin/targets/ramips/mt7621/*tplink_mr600-v1-eu*.bin out/
+          ls -la out/
+          ( cd out && sha256sum *.bin > SHA256SUMS && cat SHA256SUMS )
+
+      - name: Upload workflow artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: openwrt-mr600-v1-eu
+          path: out/
+          if-no-files-found: error
+
+      - name: Publish release
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" out/* \
+            --title "$GITHUB_REF_NAME" \
+            --notes "Generic OpenWrt build for the TP-Link Archer MR600 v1 (EU). No vendor calibration data is included; first boot keeps the target unit's own WiFi calibration. See INSTALL.md."

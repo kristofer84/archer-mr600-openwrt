@@ -1,0 +1,238 @@
+#!/bin/sh /etc/rc.common
+# Prepare the built-in Qualcomm M9645 (05c6:9025) LTE modem before the network
+# comes up. The standard netifd 'qmi' proto then brings up wwan0 and takes a
+# DHCP lease from the module's default bearer.
+#
+# Why the preparation is needed, and why it has to happen first:
+#
+# The qmi proto probes the module heavily (--get-pin-status, --uim-get-sim-state,
+# ...). When this module returns a reply it does not parse - which it does
+# readily while it is still starting up - the proto decides the SIM is "in
+# illegal state" and power-cycles it. That wedges the module's QMI processor:
+# afterwards every QMI request fails ("Failed to connect to service", "Out of
+# call") while AT still answers perfectly, and it does NOT recover on a USB
+# re-enumeration or a CFUN cycle - only a full power cycle clears it. The proto
+# also leaves hung uqmi processes holding /dev/cdc-wdm0.
+#
+# So this script gets the module into a state the proto will not choke on:
+#
+# 1. HEALTH. --get-version answers even on a half-wedged module, so it is not a
+#    readiness test. --get-serving-system is: a wedged module returns
+#    "Unknown error" / "Failed to connect to service" there. Reset the module
+#    with a USB re-enumeration only when that probe fails.
+# 2. RADIO. The module can be left at CFUN=0 (radio off), where nothing
+#    registers. AT+CFUN=1 turns it back on.
+# 3. APN. Its always-on default bearer (CID 1) has an EMPTY stored APN, and
+#    AT+CGDCONT is RAM-only on this module - worse, the value is *consumed* by
+#    the activation rather than stored, so profile 1 reads back empty again
+#    afterwards. Setting it at boot therefore covers the boot's activation and
+#    nothing else: every LATER re-activation meets an empty profile and fails
+#    with "Unable to connect IPv4" while the proto loops and the interface never
+#    rises. So the value is also written into uci, because the proto passes it
+#    on only when the option exists (${apn:+--apn $apn}) - that makes every
+#    activation work, and it puts the APN where LuCI can show and change it.
+#    This is why the AT port is needed at runtime at all.
+# 4. RAW-IP. qmi_wwan defaults raw_ip to N and refuses to change it while the
+#    interface is up, so set Y while wwan0 is down (the proto writes it too,
+#    but only after netifd may already have brought the interface up).
+#
+# 5. SMS. The module does not store incoming (mobile-terminated) SMS with its factory
+#    routing - `AT+CNMI` was 0,0,0,0,0 and `sms_tool recv` stayed empty no matter what was
+#    sent. Setting CNMI to store-and-notify plus an explicit storage makes receive work.
+#    Like the APN these are RAM-only, so they are re-applied on every boot. Sending worked
+#    without this, which is what made it look like a network problem.
+#
+# The APN comes from the wwan interface's `apn` option (the interface 02_network creates is
+# `wwan0`; `wwan` is accepted too, for an older config), so it is one uci value per SIM.
+
+START=18
+STOP=92
+
+LTE_USB=/sys/bus/usb/devices/1-1
+CTL=/dev/cdc-wdm0
+IF=wwan0
+RAW=/sys/class/net/$IF/qmi/raw_ip
+AT=/dev/ttyUSB2
+ATCMD=/usr/bin/at-tty
+APN_MARK=/tmp/.lte-apn-reconciled
+
+qmi_ok() { uqmi -s -d "$CTL" -t 3000 --get-serving-system 2>/dev/null | grep -q '"registration"'; }
+
+# Wait until the module reports it is registered. The netifd qmi proto (S20) starts right
+# after this script, and against an unregistered module it gives up with "Unable to connect
+# IPv4" and leaves the interface pending - so block until ready rather than race it.
+wait_registered() {
+	local i=0
+	while [ $i -lt 20 ]; do
+		uqmi -s -d "$CTL" -t 3000 --get-serving-system 2>/dev/null |
+			grep -q '"registration":"registered"' && return 0
+		sleep 3; i=$((i+1))
+	done
+	logger -t lte "warning: not registered after 60s; starting the network anyway"
+	return 1
+}
+
+wait_ctl() { local i=0; while [ $i -lt 30 ]; do [ -c "$CTL" ] && return 0; sleep 1; i=$((i+1)); done; return 1; }
+
+reset_modem() {
+	[ -e "$LTE_USB/authorized" ] || return 0
+	qmi_ok && return 0
+	logger -t lte "QMI unhealthy; re-enumerating module"
+	echo 0 > "$LTE_USB/authorized"
+	sleep 3
+	echo 1 > "$LTE_USB/authorized"
+	wait_ctl || { logger -t lte "error: $CTL did not return"; return 1; }
+	sleep 5
+}
+
+bind_at() {
+	modprobe option 2>/dev/null
+	# 05c6:9025 is not in option's table; add it so interfaces 0-3 become ttyUSB0-3.
+	[ -e /sys/bus/usb-serial/drivers/option1/new_id ] &&
+		echo 05c6 9025 > /sys/bus/usb-serial/drivers/option1/new_id 2>/dev/null
+	local i=0
+	while [ $i -lt 20 ]; do [ -c "$AT" ] && return 0; sleep 1; i=$((i+1)); done
+	return 1
+}
+
+at() { "$ATCMD" "$AT" 115200 "$@" 2>/dev/null; }
+
+radio_on() {
+	# CFUN must be 1 before the SIM is readable, and before anything registers.
+	local f
+	f=$(at 'AT+CFUN?' | tr -d '\r' | grep -o 'CFUN: [0-9]')
+	[ "$f" = "CFUN: 1" ] && return 0
+	at 'AT+CFUN=1' >/dev/null
+	logger -t lte "CFUN=1"
+	sleep 10
+}
+
+set_apn() {
+	local apn="$1" i=0
+	[ -n "$apn" ] || { logger -t lte "no APN to set"; return 0; }
+	while [ $i -lt 5 ]; do
+		at "AT+CGDCONT=1,\"IP\",\"$apn\"" | grep -q OK && { logger -t lte "APN set to $apn"; return 0; }
+		sleep 2; i=$((i+1))
+	done
+	logger -t lte "error: could not set APN"
+	return 1
+}
+
+APN_TABLE=/etc/mr600-apn-table
+
+# Which network are we on? The IMSI's MCC/MNC is the SIM's home network, which is what the
+# table is keyed on; fall back to the registered network's PLMN when the SIM will not say.
+# The SIM's home network as a digit string: the IMSI's leading digits ARE mcc+mnc.
+# Fall back to the registered PLMN (its MNC needs zero-padding to two digits, because
+# uqmi reports 8 where the table - and the IMSI - have 08).
+home_mccmnc() {
+	local imsi mcc mnc i=0
+	# Retry: right after its reset the module does not always answer AT yet, and an empty
+	# IMSI silently falls through to the PLMN path (which is correct but less authoritative).
+	while [ $i -lt 5 ]; do
+		imsi=$(at 'AT+CIMI' 2>/dev/null | tr -d '\r' | grep -E '^[0-9]{6,}$' | head -1)
+		[ -n "$imsi" ] && { echo "$imsi"; return 0; }
+		sleep 2; i=$((i+1))
+	done
+	mcc=$(uqmi -s -d "$CTL" -t 3000 --get-serving-system 2>/dev/null |
+		sed -n 's/.*"plmn_mcc":\([0-9]*\).*/\1/p')
+	mnc=$(uqmi -s -d "$CTL" -t 3000 --get-serving-system 2>/dev/null |
+		sed -n 's/.*"plmn_mnc":\([0-9]*\).*/\1/p')
+	[ -n "$mcc" ] && [ -n "$mnc" ] && printf '%s%02d' "$mcc" "$mnc"
+}
+
+apn_from_table() {
+	local key="$1" line
+	[ -n "$key" ] || return 1
+	[ -r "$APN_TABLE" ] || return 1
+	line=$(awk -F'\t' -v k="$key" '$1 == k { print; exit }' "$APN_TABLE")
+	[ -n "$line" ] || return 1
+	printf '%s' "$line"
+}
+
+# Resolve the APN. An explicit network.wwan0.apn wins (so a carrier can always be forced);
+# otherwise derive it from the SIM. Nothing is baked in for any one carrier, and an unknown
+# carrier is left with no APN and a loud warning rather than a wrong one.
+resolve_apn() {
+	local override key hit
+	override=$(uci -q get network.wwan0.apn)
+	[ -n "$override" ] || override=$(uci -q get network.wwan.apn)
+	if [ -n "$override" ]; then
+		echo "$override"
+		return 0
+	fi
+
+	# 5 digits (MCC + 2-digit MNC) is the common case; 6 covers 3-digit MNCs.
+	key=$(home_mccmnc)
+	for k in "$(echo "$key" | cut -c1-5)" "$(echo "$key" | cut -c1-6)"; do
+		hit=$(apn_from_table "$k") && { printf '%s\n' "$hit" | cut -f2; return 0; }
+	done
+
+	logger -t lte "warning: no APN known for $key - set network.wwan0.apn to override"
+	return 1
+}
+
+# The APN the proto will hand to `uqmi --start-network`, written back to uci when it differs.
+# See note 3 at the top: the proto passes --apn only when the option is set, and without it a
+# re-activation runs against the module's profile 1, which reads back empty after the first
+# activation. Only a change is written, so this costs one flash write per SIM, not one per boot.
+persist_apn() {
+	local want="$1" cur
+	[ -n "$want" ] || return 0
+	cur=$(uci -q get network.wwan0.apn)
+	[ "$cur" = "$want" ] && return 0
+	uci set network.wwan0.apn="$want" 2>/dev/null || return 0
+	uci commit network 2>/dev/null || return 0
+	logger -t lte "APN written to uci so the proto passes it: $want"
+}
+
+# $APN_MARK records the APN the modem was last attached with. The hotplug script compares it
+# against uci to tell "the APN changed under a running link" from "this is the boot", where
+# the fresh attach below already applied it and no re-attach is wanted.
+mark_apn_applied() {
+	[ -n "$1" ] && echo "$1" > "$APN_MARK" 2>/dev/null
+	return 0
+}
+
+set_sms_routing() {
+	# Without this the module silently drops mobile-terminated SMS: the factory CNMI
+	# (0,0,0,0,0) means "do not store and do not notify", so `sms_tool recv` is always
+	# empty while SENDING works perfectly. RAM-only, so re-applied every boot.
+	at 'AT+CMGF=0' >/dev/null
+	at 'AT+CPMS="ME","ME","ME"' >/dev/null
+	if at 'AT+CNMI=2,1,0,0,0' | grep -q OK; then
+		logger -t lte "SMS routing set (store + notify)"
+	else
+		logger -t lte "warning: could not set SMS routing"
+	fi
+}
+
+
+start() {
+	local apn i=0
+	# START=18 can run before USB enumeration; 05c6:9025 is not instantiated faster.
+	while [ ! -e "$LTE_USB/authorized" ] && [ $i -lt 40 ]; do sleep 1; i=$((i+1)); done
+	[ -e "$LTE_USB/authorized" ] || { logger -t lte "error: $LTE_USB never appeared"; return 1; }
+	[ $i -gt 0 ] && logger -t lte "USB device appeared after ${i}s"
+
+	# ORDER MATTERS, and getting it wrong fails silently into an empty APN:
+	#   1. reset the module if its QMI is wedged,
+	#   2. bring the AT port up - /dev/ttyUSB2 does not exist until option binds it,
+	#   3. turn the radio on,
+	#   4. and only now is the SIM readable, so derive the APN from it,
+	#   5. then set it.
+	reset_modem
+	bind_at || logger -t lte "warning: no AT port; APN will not be set"
+	radio_on
+
+	apn=$(resolve_apn) || apn=""
+	[ -n "$apn" ] && logger -t lte "APN: $apn"
+	set_apn "$apn"
+	persist_apn "$apn"
+	mark_apn_applied "$apn"
+	set_sms_routing
+	wait_registered
+	# The netifd qmi proto then brings up wwan0 and gets a DHCP lease from the
+	# module's default bearer. This script only has to prepare the module.
+	return 0
+}

@@ -1,0 +1,91 @@
+#!/bin/sh
+# First-boot calibration for the TP-Link MR600 v1 (EU).
+#
+# The stock rootfs carries /etc/MT7603E_EEPROM.bin and /etc/MT7612E_EEPROM.bin, 512 bytes each,
+# with placeholder MACs patched at runtime. They are assembled into the 64K blob this script
+# writes (MT7603E at 0x0, MT7612E at 0x8000, 0xFF elsewhere).
+#
+# TWO 64K REGIONS ARE EASILY CONFUSED HERE, and the stock map disagrees with OpenWrt's:
+#   * 0xfe0000 - where the STOCK kernel registers its `radio` partition. Blank on this unit.
+#     OpenWrt calls this region `filler` and does not use it.
+#   * 0xff0000 - the last 64K of the chip, covered by no stock partition, where the STOCK WiFi
+#     driver keeps its calibration behind a hardcoded base (raspi_flash_write refuses anything
+#     outside 0xff0000..0xff7fff). It is NOT blank on a unit that has booted stock firmware.
+# OpenWrt's DTS calls 0xff0000 `radio` and reads the EEPROM from it via eeprom@0 / eeprom@8000,
+# so that is where the blob belongs. Hence `radio` must be writable - stock marks the region
+# read-only and the write fails with EROFS.
+#
+# CALIBRATION IS PER UNIT. It carries that unit's RF calibration (and a MAC seed), so the blob
+# built from one unit must not be written to another. This image therefore PRESERVES whatever
+# is already in the region and only installs its shipped blob when the region is blank:
+#
+#   * magic 0376 / 6276 -> a real EEPROM is present. Leave it. This is the normal case for any
+#     unit that has booted stock firmware, and it is what makes ONE built image safe on any
+#     MR600 v1.
+#   * all-0xFF         -> blank. Write the shipped blob as a fallback.
+#   * anything else    -> unrecognised. Leave it and say so.
+#
+# To give a unit its own blob in the image instead, rebuild it from that unit's stock rootfs
+# with build-kit/make-radio-cal.sh; but the preservation below makes that unnecessary.
+#
+# The drivers read the EEPROM at module load, so a reboot is needed after a write. It is
+# deferred so the rest of first-boot finishes first.
+#
+# WRITE-FREE GUARD, and it is load-bearing. This script lives in base-files, so it is present in
+# the initramfs too - and an initramfs boot must write NOTHING, because the whole point of the
+# tftpboot step is to verify the image before committing it. Without the check below the script
+# ran from the initramfs, wrote the calibration and rebooted at ~24s, which is exactly the
+# violation it was supposed to be protecting against. In the initramfs the root is not squashfs,
+# so that is what we test.
+
+grep -qs squashfs /proc/mounts || exit 0
+
+# The overlay must already be the persistent jffs2 one. On the first boot after a fresh
+# sysupgrade it is a temporary tmpfs, and mount_root switches rootfs_data to jffs2 later in
+# init. Return NON-ZERO here: uci-defaults deletes a script only when it exits 0, so `exit 1`
+# KEEPS this one for the persistent boot. (An `exit 0` guard is silently wrong - the script
+# would be marked applied and removed, and a fresh unit would never calibrate.) Rebooting
+# while the overlay is still tmpfs preempts the switch and loops the device forever.
+grep -qs jffs2 /proc/mounts || exit 1
+
+[ -f /root/radio-cal.bin ] || exit 0
+
+board=$(cat /tmp/sysinfo/board_name 2>/dev/null)
+[ "$board" = "tplink,mr600-v1-eu" ] || exit 0
+
+# Resolve the radio partition by NAME. Its mtdN is not stable across kernel/build changes, and
+# one earlier revision of this script guarded on /dev/mtd5, which is a different partition here.
+mtdnum=$(awk -F: '/"radio"/ { gsub(/[^0-9]/, "", $1); print $1 }' /proc/mtd)
+[ -n "$mtdnum" ] || { logger -t mr600-radiocal "no 'radio' partition found"; exit 0; }
+
+# If the region already holds this exact blob there is nothing to do - and no reason to reboot.
+if mtd verify /root/radio-cal.bin radio >/dev/null 2>&1; then
+	logger -t mr600-radiocal "calibration already current"
+	exit 0
+fi
+
+# Otherwise decide by what is actually there. The first two bytes of each EEPROM are a fixed
+# version/magic pair (0376 for the MT7603E, 6276 for the MT7612E); a blank NOR cell reads 0xFF.
+magic=$(dd if="/dev/mtd${mtdnum}" bs=1 count=2 2>/dev/null | hexdump -v -e '/1 "%02x"')
+case "$magic" in
+	0376|6276)
+		logger -t mr600-radiocal "radio already holds a calibration (magic ${magic}); keeping the unit's own"
+		exit 0
+		;;
+	ffff|"")
+		logger -t mr600-radiocal "radio is blank; writing the shipped calibration blob"
+		;;
+	*)
+		logger -t mr600-radiocal "radio magic '${magic}' unrecognised; not touching it"
+		exit 0
+		;;
+esac
+
+if mtd write /root/radio-cal.bin radio; then
+	logger -t mr600-radiocal "calibration written; rebooting in 10s"
+	sync
+	( sleep 10; reboot ) &
+else
+	logger -t mr600-radiocal "mtd write failed - is the radio partition writable?"
+fi
+exit 0

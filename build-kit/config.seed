@@ -1,0 +1,35 @@
+CONFIG_TARGET_ramips=y
+CONFIG_TARGET_ramips_mt7621=y
+CONFIG_TARGET_ramips_mt7621_DEVICE_tplink_mr600-v1-eu=y
+# what the user asked for on top of the PR's DEVICE_PACKAGES
+CONFIG_PACKAGE_luci=y
+# LTE: driven by the standard qmi proto (uqmi) plus an init script that prepares the module -
+# see build-kit/README.md, "The LTE modem". The preparation is a warm-boot USB re-enumerate,
+# AT+CFUN=1, the module's RAM-only APN over AT, and qmi_wwan's raw_ip while the interface is
+# down. The qmi proto then brings up wwan0 and takes a DHCP lease off the module's own bearer.
+#
+# ModemManager is deliberately NOT installed. It cannot drive this modem - it takes
+# /dev/cdc-wdm0 and its probing wedges the module's QMI until a full power cycle - and it costs
+# ~2.4 MB of a 16 MB image. SMS, if it is ever wanted, goes over the AT port (AT+CMGS) instead.
+CONFIG_PACKAGE_luci-proto-qmi=y
+# AT access to the LTE modem: the RAM-only APN has to be re-set on every boot over AT, and the
+# port that answers is interface 2, not the ff/42 interface 1. option does not bind 05c6:9025 by
+# default (the id is not in its table), so the init script adds it at runtime.
+CONFIG_PACKAGE_kmod-usb-serial-option=y
+CONFIG_PACKAGE_kmod-usb-serial-wwan=y
+# SMS. sms_tool drives the AT port directly (16 KiB) and the port is already bound for the APN.
+# The module also needs its routing set at boot - see /etc/init.d/lte-reset - because with the
+# factory CNMI it silently drops mobile-terminated SMS while sending works.
+# ModemManager cannot do SMS on this modem at all (its probing wedges it), and qmicli's WMS
+# has no send or read action.
+CONFIG_PACKAGE_sms-tool=y
+# Pin the radios explicitly. The device block's DEVICE_PACKAGES should pull these, but they were
+# silently absent when the target resolved wrongly, and the failure is invisible until the device
+# boots with no WiFi.
+CONFIG_PACKAGE_kmod-mt7603=y
+CONFIG_PACKAGE_kmod-mt76x2=y
+CONFIG_PACKAGE_kmod-ledtrig-network=y
+
+# keep the build small: nothing here has these radios
+# CONFIG_PACKAGE_kmod-mt76x0-common is not set
+# CONFIG_PACKAGE_kmod-mt76x2-usb is not set
