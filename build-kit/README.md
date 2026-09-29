@@ -109,9 +109,14 @@ cause:
 
 ### 1. A warm boot wedges it; a USB re-enumeration resets it
 
-The module is powered independently of the SoC, so a router reboot does not reset it. If its QMI
-is wedged (commonly after ModemManager touched it), only a USB re-enumeration or a full power
-cycle clears it - `AT+CFUN=1,1` does not. `lte-reset` re-enumerates on boot.
+The module is powered independently of the SoC, so a router reboot does not reset it: after a warm
+boot it enumerates and `/dev/cdc-wdm0` exists, but QMI answers `Unknown error` or a malformed
+message. A USB re-enumeration clears that, and `lte-reset` does it on every boot.
+
+That is the **soft** wedge. There is a harder one - what ModemManager or an unprepared `qmi` proto
+leaves behind (*ModemManager is not installed* below) - and it does not answer to the same cure: a
+re-enumeration, a `CFUN` cycle and `AT+CFUN=1,1` all fail on it, and only a full power cycle clears
+it. The two are easy to confuse, because both show the same symptom: QMI failing while AT answers.
 
 ### 2. It can be left at `CFUN=0` (radio off)
 

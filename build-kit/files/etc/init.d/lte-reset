@@ -10,9 +10,11 @@
 # readily while it is still starting up - the proto decides the SIM is "in
 # illegal state" and power-cycles it. That wedges the module's QMI processor:
 # afterwards every QMI request fails ("Failed to connect to service", "Out of
-# call") while AT still answers perfectly, and it does NOT recover on a USB
-# re-enumeration or a CFUN cycle - only a full power cycle clears it. The proto
-# also leaves hung uqmi processes holding /dev/cdc-wdm0.
+# call") while AT still answers perfectly. THIS is the hard wedge - a USB
+# re-enumeration, a CFUN cycle and AT+CFUN=1,1 all fail on it, and only a full
+# power cycle clears it. (A warm boot leaves a different, softer wedge that the
+# re-enumeration in step 1 below DOES clear; both look the same from QMI.) The
+# proto also leaves hung uqmi processes holding /dev/cdc-wdm0.
 #
 # So this script gets the module into a state the proto will not choke on:
 #
