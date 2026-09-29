@@ -48,6 +48,17 @@ Verify what you downloaded:
 sha256sum -c SHA256SUMS     # runs against the names in the file
 ```
 
+That proves the download is intact, not who built it. Each image also carries a signed build
+provenance attestation (from v0.1.2 on), which proves it was built by this repo's `build`
+workflow from a specific commit, not uploaded by hand:
+
+```sh
+gh attestation verify openwrt-ramips-mt7621-tplink_mr600-v1-eu-initramfs-kernel.bin \
+  -R kristofer84/archer-mr600-openwrt
+```
+
+The output names the commit and workflow run; that run's log shows exactly how it was built.
+
 The released image is a **generic** build: it ships **no** WiFi calibration blob, so it contains
 no per-unit data. First boot keeps the target unit's own calibration (§7).
 

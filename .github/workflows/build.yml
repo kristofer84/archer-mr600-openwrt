@@ -12,6 +12,10 @@ on:
 
 permissions:
   contents: write
+  # Build provenance: a Sigstore-signed statement binding each image's digest to this repo,
+  # commit, workflow and run. Anyone can check it with `gh attestation verify`.
+  id-token: write
+  attestations: write
 
 jobs:
   image:
@@ -72,6 +76,11 @@ jobs:
           ls -la out/
           ( cd out && sha256sum *.bin > SHA256SUMS && cat SHA256SUMS )
 
+      - name: Attest build provenance
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-path: out/*.bin
+
       - name: Upload workflow artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -83,7 +92,14 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         env:
           GH_TOKEN: ${{ github.token }}
+        # If the release already exists (created by hand before the build finished), attach
+        # and overwrite the assets instead of failing, so the published files are the ones
+        # this run built and attested.
         run: |
+          if gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
+            gh release upload "$GITHUB_REF_NAME" out/* --clobber
+            exit 0
+          fi
           gh release create "$GITHUB_REF_NAME" out/* \
             --title "$GITHUB_REF_NAME" \
             --notes "Generic OpenWrt build for the TP-Link Archer MR600 v1 (EU). No vendor calibration data is included; first boot keeps the target unit's own WiFi calibration. See INSTALL.md."
