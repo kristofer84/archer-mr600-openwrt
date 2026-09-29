@@ -144,8 +144,16 @@ At the `MT7621 #` prompt:
 ```
 setenv ipaddr 192.168.0.1
 setenv serverip 192.168.0.5
-setenv bootargs 'console=ttyS0,115200'
 tftpboot 0x82000000 test.bin
+bootm 0x82000000
+```
+
+That is the whole sequence - **no `setenv bootargs` is needed.** U-Boot passes its own, and its
+defaults already use `console=ttyS0,115200`, which is the right console for OpenWrt. Only if the
+console is silent after `bootm` should you force it for one boot:
+
+```
+setenv bootargs 'console=ttyS0,115200'
 bootm 0x82000000
 ```
 

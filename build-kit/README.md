@@ -188,8 +188,9 @@ past the uImage and fail.
 ### The console port
 
 This board's console is **`ttyS0`** in OpenWrt (the stock firmware calls the same physical UART
-`ttyS1`). U-Boot normally passes its own `bootargs`, which wins; if the console is silent, force
-it per-boot without touching flash:
+`ttyS1`). You normally do **not** need to set `bootargs`: U-Boot passes its own, and its defaults
+already use `console=ttyS0,115200`. Only if the console is silent should you force it per-boot,
+without touching flash:
 
 ```
 setenv bootargs 'console=ttyS0,115200'
