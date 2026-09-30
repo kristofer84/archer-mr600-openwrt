@@ -43,6 +43,29 @@ Outputs land in `$TREE/bin/targets/ramips/mt7621/`:
 | `*-squashfs-sysupgrade.bin` | what you commit once the initramfs has been verified |
 | `*-squashfs-factory.bin` | stock-layout image, for a raw write (not needed for the normal install) |
 
+### Local variants, and why the version string cannot identify one
+
+`build.sh` reads an optional `build-kit/config.seed.local` (gitignored) after the tracked seed, so a
+local image can add packages without diverging the published one. It copies what it applied to
+`$TREE/.config.seed.local.applied`, and `verify-image.sh` requires every `CONFIG_...=y` line in
+that record to be present in the built `.config` - a mismatch is a hard failure, because a release
+must not ship one.
+
+**A local variant is invisible in the running system.** `DISTRIB_REVISION` comes from the tree, so
+a generic build and a variant of the same commit report the *same* `r...-<hash>`. Measured on this
+device on 2026-09-30: generic and local-variant builds both read `r36672-138fabb79f`. Neither the
+version string nor an attestation naming the commit tells you which you have. The only records are
+the seed pair (`config.seed.local` and its `.applied` copy) and the build log, which ends with an
+explicit `LOCAL VARIANT` or `GENERIC image` line. Keep those with the image, or "same revision"
+becomes "same image" in someone's head and the packages are simply gone.
+
+**Size, measured rather than estimated.** A local set of `qmi-utils`, `openvpn-openssl`,
+`mosquitto-client-ssl`, `tcpdump` and `curl` took the rootfs squashfs from **4.5 MB to 8.5 MB - +4.0
+MB compressed**, which is about **2.2:1** on installed size, not the ~3:1 a general xz figure
+suggests. glib/libqmi-heavy sets compress worse than the average, so budget by 2:1 and the estimate
+stays conservative. The firmware partition is 15.6 MB, so a 3.5 MB kernel plus an 8.5 MB squashfs
+leaves ~3.5 MB - it fits, with less room than a 3:1 assumption would have predicted.
+
 ## Calibration: generic by default, per unit by nature
 
 The WiFi calibration is **per unit** - it carries that unit's RF calibration and a MAC seed - so
