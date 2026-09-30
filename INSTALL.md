@@ -294,6 +294,45 @@ is dead after an install check `dmesg | grep -i radio` and the `radio` partition
 
 ## 9. Recovery
 
+### Reflashing an OpenWrt you already run (no UART, no TFTP)
+
+Once the device runs OpenWrt, upgrading is a network operation from the running system - copy the
+sysupgrade image over and run it:
+
+```sh
+scp -O sysupgrade.bin root@192.168.1.1:/tmp/
+ssh root@192.168.1.1 'sysupgrade -T /tmp/sysupgrade.bin'    # non-destructive image/board check
+ssh root@192.168.1.1 'sysupgrade /tmp/sysupgrade.bin'       # commit, keep settings
+ssh root@192.168.1.1 'sysupgrade -n /tmp/sysupgrade.bin'    # commit, wipe settings
+```
+
+**What "keep settings" keeps is decided by the system you are upgrading *from*, not by the image
+you are writing.** `sysupgrade -l` prints the list: all of `/etc/config/`, a few base-files
+essentials (`/etc/passwd`, `/etc/shadow`, `/etc/rc.local`, `/etc/sysupgrade.conf`, ...),
+`/etc/profile.d/`, the SSH host keys, and one entry per installed package from
+`/lib/upgrade/keep.d/`. Everything else in the overlay is discarded, and the firmware (kernel +
+rootfs) is replaced whole.
+
+The part that catches people: **a directory is kept only if a package installed on the old system
+claims it.** Flashing *from* a build that lacks a package *into* one that has it drops that
+package's directory. Measured on this device: upgrading from a build without `openvpn` to one with
+it lost `/etc/openvpn/mr600.conf`, even though the new image could run it - the old system had no
+`openvpn` `keep.d` entry. If a configuration directory matters, take a backup before flashing and
+restore the one file afterwards:
+
+```sh
+# on the router, before flashing - same list as "keep settings"
+sysupgrade -b /tmp/cfg.tgz && scp -O root@192.168.1.1:/tmp/cfg.tgz .
+
+# later, put a dropped file back
+tar -xzf cfg.tgz -C /tmp etc/openvpn/mr600.conf
+scp -O /tmp/etc/openvpn/mr600.conf root@192.168.1.1:/etc/openvpn/
+```
+
+A related trap, in the build kit rather than here: a kernel module can only be installed into the
+kernel it was built for (the kernel package version hashes the kernel `.config`), so `opkg`/`apk`
+cannot add `kmod-tun` to a running image - see `build-kit/README.md`, "Gotchas".
+
 ### Restore stock OpenWrt -> stock firmware
 
 Boot the initramfs again (§3-§4, write-free), then put the two backup files back. **Note the

@@ -13,6 +13,10 @@ is the alternative to [INSTALL.md](INSTALL.md) when physical access is not possi
 > the only recovery is UART ([INSTALL.md](INSTALL.md) §9) - so if you can open the case, use
 > [INSTALL.md](INSTALL.md) instead. This path is for when you cannot.
 
+> **If the device already runs OpenWrt**, do not use this route at all - upgrade it over the
+> network with `sysupgrade` instead ([INSTALL.md](INSTALL.md) §9, "Reflashing an OpenWrt you
+> already run"). This document is only for getting OpenWrt onto a *stock* unit with no case access.
+
 ## Prerequisites
 
 * LAN access to the router (stock default `192.168.1.1`).
