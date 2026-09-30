@@ -174,18 +174,122 @@ any carrier. A value you set in uci overrides the lookup.
   DHCP server on the bearer.
 * **ModemManager is not installed and must stay that way.** It takes `/dev/cdc-wdm0`, and its
   probing drives this module's QMI processor into a state that **only a full power cycle clears**;
-  it also costs ~2.4 MB of a 16 MB image. `99-mr600-lte` disables it defensively. SMS, if wanted,
-  goes over the AT port rather than through ModemManager.
+  it also costs ~2.4 MB of a 16 MB image. `99-mr600-lte` disables it defensively. SMS goes over
+  the AT port instead - see "The SMS app" below - which is also why ModemManager is not needed
+  for it.
 * `comgt` (the AT/PPP fallback) is likewise not installed - the QMI path is the working one.
 * The AT port that answers is **interface 2** (`/dev/ttyUSB2`), not the `ff/42` interface 1, and
   `option` does not list `05c6:9025`, so the init script adds the id at runtime.
 
+## The SMS app
+
+The image carries an SMS / USSD / AT interface in LuCI: `luci-app-sms-tool-js` (a LuCI JS
+front-end to `sms_tool`) plus this kit's glue for it, `mr600-sms`. Both are built from
+[`packages/`](packages/README.md), which is a **local feed** (`src-link mr600` in `feeds.conf`):
+the SMS code is committed in this repository, next to the image config that ships it, so a build
+does not depend on a third-party repo still existing - and "which code is in this image?" is
+answerable from the image's own commit. `packages/README.md` also has the two commands that check
+the vendored app against the upstream commit it came from.
+
+What it does: list and read stored messages, delete one or all, send (GSM-7 and UCS-2, split into
+concatenated parts when long), send USSD codes, type raw AT commands, and a dashboard tile with
+the operator, signal and a new-SMS count.
+
+What it does **not** do, because these are easy to assume from the screenshots:
+
+* **forwarding on arrival is not in the app.** Its only forwarding target is e-mail, and only for
+a message someone picks by hand. The MQTT forwarding below is this kit's, in `mr600-sms`.
+* **it does not set `AT+CNMI`, or the storage area's routing.** `sms_tool` exposes neither, so the
+app inherits what `/etc/init.d/lte-reset` sets at boot (`AT+CNMI=2,1,0,0,0`, `AT+CPMS="ME"`). If
+that line ever disappears, sending keeps working, the inbox keeps listing what is already stored,
+and arriving SMS are dropped by the modem with no symptom anywhere. `verify-image.sh` fails the
+image if it goes.
+* **the new-SMS count is a delta, not read/unread state.** `sms_tool recv` asks for `AT+CMGL=4`
+and throws away each entry's `stat` field, so nothing downstream can tell read from unread, or
+inbound from sent. The tile compares the storage area's used count now against the count saved
+when the inbox was last opened: "messages that arrived since I last looked", not "unread".
+* **the recipient picker reads a static file** (`/etc/modem/phonebook.user`), not the SIM's own
+phonebook (`AT+CPBR`).
+* **opening the inbox writes to flash.** The view persists that saved count with `uci.save()` +
+`uci.apply()` on every load, and again after each delete. It is a few KB of overlay per visit; it
+was left alone because removing it means forking the app, and the delta above depends on it.
+
+### The MR600 defaults the kit applies
+
+`mr600-sms` ships `/etc/uci-defaults/99-mr600-sms`, which sets only what is wrong on this device.
+Each one fails silently if left at the app's own default:
+
+| app option | this kit sets | what the default would do here |
+|---|---|---|
+| `readport`, `sendport`, `ussdport`, `atport` | `/dev/ttyUSB2` (all four) | empty means `sms_tool` uses its compiled-in `/dev/ttyUSB0`. That device **does exist** on this router - `option` binds the modem's interfaces 0-3 as ttyUSB0-3 - but interface 0 is not the AT port, so the inbox, send, USSD and AT pages all come up empty and say nothing |
+| `storage` | `ME` | `SM` is empty here; the modem stores in ME (`lte-reset` sets `CPMS="ME"` for the same reason), so a correct port with the wrong area still reads nothing |
+| `mergesms` | `1` | each part of a long message is shown as its own row |
+| `ontopsms` | `1` | no dashboard tile, so no new-SMS count at all |
+| the call-log daemon | stopped and disabled | it holds `/dev/ttyUSB2` open and polls `AT+CLCC` every ~2 s, fighting `lte-reset` and every `sms_tool` call |
+
+The kit also ships a `defmodems`-free configuration on purpose: with no such config the dashboard
+tile runs in SMS-only mode off `readport` and never calls the `md_*` helpers, which come from the
+third-party `modemdata` package that this kit deliberately does not install.
+
+### SMS over MQTT
+
+New SMS are published to an MQTT broker by `/usr/sbin/sms-mqtt-poll`, run every 30 s by
+`/etc/init.d/sms-mqtt`. **It is off by default and has no broker**: the published image is
+for any MR600 v1, and a broker address is site-specific. To switch it on:
+
+```sh
+uci set sms_mqtt.main.broker='192.168.2.100'
+uci set sms_mqtt.main.topic='mr600/sms'
+uci set sms_mqtt.main.enabled='1'
+uci commit sms_mqtt
+/etc/init.d/sms-mqtt enable && /etc/init.d/sms-mqtt start
+```
+
+One message per MQTT message, as JSON:
+
+```json
+{ "event": "sms", "device": "/dev/ttyUSB2", "storage": "ME", "index": 7,
+  "sender": "+46701234567", "timestamp": "2026-09-30T11:00:00Z", "text": "..." }
+```
+
+A segment of a concatenated message adds `part`, `total` and `reference`, so a consumer can join
+them; a single-part message has none of the three.
+
+Before enabling it, run it once by hand - one pass, printing what it would publish and changing
+nothing (`/etc/config/sms_mqtt` says what every option does):
+
+```sh
+/usr/sbin/sms-mqtt-poll -n      # dry run: prints the payloads, publishes nothing
+/usr/sbin/sms-mqtt-poll         # one real pass
+logread -e sms-mqtt
+```
+
+The first real pass records the inbox as its **baseline and publishes none of it**, so installing
+this on a modem that already holds messages does not announce all of them as if they had just
+arrived. After that, delivery is *at-least-once*: a message is only recorded as announced once
+`mosquitto_pub` reported success, so a broker that is down means the next pass retries rather than
+drops it, and a read that fails leaves the state file untouched (an empty read must never look
+like "everything was deleted and then re-received").
+
+It **polls** rather than listening on the AT port even though `AT+CNMI=2,1` would let it publish at
+the instant of arrival: `/dev/ttyUSB2` is shared with `lte-reset` and with every SMS/USSD/AT action
+in LuCI, and a process holding it open takes bytes from those and they from it - a failure that
+looks like a modem fault. Polling costs up to one interval of latency and keeps the port free
+otherwise.
+
+MQTT publishing needs a mosquitto client, which is **not** a dependency of `mr600-sms`: the two
+variants (`mosquitto-client-ssl`, `mosquitto-client-nossl`) provide the same binaries and conflict
+with each other, so the choice belongs to the image. The local variant seed installs
+`mosquitto-client-ssl`; a pass without one says so and exits non-zero rather than looking like a
+modem that never receives anything.
+
 ## Configuration
 
 `config.seed` is appended before `defconfig` and reproduces the intent: target `ramips/mt7621`,
-device `tplink_mr600-v1-eu`, plus `luci`, `luci-proto-qmi`, `sms-tool`, and the two radio drivers
-pinned explicitly (they were once silently absent when the target resolved wrongly, and the failure
-is invisible until the device boots with no WiFi). It is not a byte-copy of any original config.
+device `tplink_mr600-v1-eu`, plus `luci`, `luci-proto-qmi`, `sms-tool`, the SMS app and its glue
+(`luci-app-sms-tool-js`, `mr600-sms`), and the two radio drivers pinned explicitly (they were once
+silently absent when the target resolved wrongly, and the failure is invisible until the device
+boots with no WiFi). It is not a byte-copy of any original config.
 
 ## Verifying on the device - do not skip this
 

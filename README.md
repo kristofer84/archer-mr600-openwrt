@@ -9,7 +9,7 @@ Instructions for installing OpenWrt on a stock Archer MR600 **v1 (EU)** and gett
 
 ## What it does
 
-After installation, OpenWrt is persistent and the internal modem comes up on its own. It is prepared before the network starts, gets the APN from the SIM, takes a DHCP lease from its default bearer, and carries traffic across cold and warm boots. The APN is visible and editable in LuCI. The same image works on any MR600 v1, since it keeps each unit's own WiFi calibration.
+After installation, OpenWrt is persistent and the internal modem comes up on its own. It is prepared before the network starts, gets the APN from the SIM, takes a DHCP lease from its default bearer, and carries traffic across cold and warm boots. The APN is visible and editable in LuCI. SMS can be read, sent, and forwarded to MQTT from LuCI, and USSD codes and raw AT commands can be issued there ([INSTALL.md](INSTALL.md) §9). The same image works on any MR600 v1, since it keeps each unit's own WiFi calibration.
 
 ## Limitations
 

@@ -10,7 +10,7 @@ is the alternative to [INSTALL.md](INSTALL.md) when physical access is not possi
 > already disclosed to TP-Link (2026-09-21) and posted on
 > [openwrt/openwrt#25074](https://github.com/openwrt/openwrt/pull/25074). The flash write goes
 > through `/dev/flash0`, the vendor's raw flash device. A failed write **bricks the router**, and
-> the only recovery is UART ([INSTALL.md](INSTALL.md) §9) - so if you can open the case, use
+> the only recovery is UART ([INSTALL.md](INSTALL.md) §10) - so if you can open the case, use
 > [INSTALL.md](INSTALL.md) instead. This path is for when you cannot.
 
 ## Prerequisites
@@ -104,5 +104,5 @@ gone).
 
 ## Recovery
 
-A bricked router is recovered over UART exactly as in [INSTALL.md](INSTALL.md) §9: initramfs
+A bricked router is recovered over UART exactly as in [INSTALL.md](INSTALL.md) §10: initramfs
 boot, then `mtd write` of the stock backup (or re-run the remote install from the initramfs).

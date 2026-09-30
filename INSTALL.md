@@ -19,7 +19,7 @@ Confirm the version on the label under the router, or in the stock web UI under 
 are unsure, stop.
 
 **This router is a whole uplink if it is your only one.** The install is recoverable over UART
-(§9), but only if you have the UART connection working. Do §1-§2 before you write anything.
+(§10), but only if you have the UART connection working. Do §1-§2 before you write anything.
 
 ### You need
 
@@ -134,7 +134,7 @@ running and the files somewhere safe.
 
 > **How the two files restore stock:** concatenate them and write the result over OpenWrt's single
 > `firmware` partition - the stock layout is kernel (`0x20000`) + rootfs (`0x220000`) inside
-> OpenWrt's `firmware` at `0x20000`. §9 has the exact commands. Keep the two files in the order
+> OpenWrt's `firmware` at `0x20000`. §10 has the exact commands. Keep the two files in the order
 > dumped.
 
 ---
@@ -217,7 +217,7 @@ sysupgrade -n /tmp/sysupgrade.bin
 `-n` means "do not keep existing config" - correct for a first install from stock. The router
 writes `firmware` and reboots into OpenWrt.
 
-**If the write fails or the unit will not boot, go to §9.** Do not power-cycle mid-write.
+**If the write fails or the unit will not boot, go to §10.** Do not power-cycle mid-write.
 
 ---
 
@@ -292,7 +292,81 @@ is dead after an install check `dmesg | grep -i radio` and the `radio` partition
 
 ---
 
-## 9. Recovery
+## 9. SMS: sending, receiving, USSD and the AT console
+
+The image carries an SMS interface in LuCI, under **Modem -> SMS Messages**:
+
+| page | what it does |
+|---|---|
+| Received Messages | lists what the modem has stored, with delete for one or all |
+| Send Messages | send to a number (or a saved entry), GSM-7 or UCS-2, long text split into parts |
+| USSD Codes | send a USSD code and show the reply |
+| AT Commands | type raw AT commands and see the response |
+| Configuration | ports, storage area, forwarding, and the editable phonebook/AT/USSD lists |
+
+The AT port, the storage area and a few other options are **already set for this device** by a
+first-boot script (`99-mr600-sms`), so SMS should work as soon as the modem is registered. If the
+inbox comes up empty while the SIM can receive messages, that script is the first thing to check:
+an unset port silently falls back to `/dev/ttyUSB0`, which exists on this router but is not the AT
+port. The build kit's [README](build-kit/README.md) has the full list and the reasoning.
+
+**Sending.** Messages are sent over the same AT port the APN is set on. Both GSM-7 and UCS-2 are
+supported, and a message too long for one SMS is sent as concatenated parts. The reply from the
+network (`+CMGS`, or a `+CMS ERROR`) is shown in the page.
+
+**Receiving.** Nothing here polls in the background: the page reads what the modem has stored in
+its `ME` area when you open it. For a message to be stored, the modem's routing has to be set -
+this image's `/etc/init.d/lte-reset` does that at every boot, because the factory setting
+(`AT+CNMI=0,0,0,0,0`) drops arriving messages while sending works perfectly. Nothing else needs to
+be enabled.
+
+**A warning about the AT console.** It will send anything you type, including a modem reset
+(`AT+CFUN=1,1`) or commands that touch the module's non-volatile settings. A `CFUN` cycle drops
+the data connection for ~40 s while it re-registers, and a few vendor commands can wedge the QMI
+processor until the router is power-cycled (see "Two hard rules" in the build kit's README). Use
+it to look, not to experiment.
+
+**The Call Log page stays absent, on purpose.** It is gated on a file that only exists if the
+app's `sms_tool_calllogd` daemon is running, and that daemon is disabled here: it holds
+`/dev/ttyUSB2` open and polls `AT+CLCC` every ~2 s, which fights both `lte-reset` and every SMS
+page. Leave it off.
+
+### Forwarding new SMS to MQTT (off by default)
+
+Arriving messages can be published to an MQTT broker. This is not part of the LuCI app - it is a
+small service in this image (`sms-mqtt`), and it does nothing until a broker is configured:
+
+```sh
+uci set sms_mqtt.main.broker='192.168.2.100'   # your broker
+uci set sms_mqtt.main.topic='mr600/sms'
+uci set sms_mqtt.main.enabled='1'
+uci commit sms_mqtt
+/etc/init.d/sms-mqtt enable && /etc/init.d/sms-mqtt start
+```
+
+Each new message is published as one JSON object (`event`, `device`, `storage`, `index`,
+`sender`, `timestamp`, `text`, and `part`/`total`/`reference` for a segment of a long message).
+Check it without publishing anything:
+
+```sh
+/usr/sbin/sms-mqtt-poll -n     # print the payloads it would publish
+logread -e sms-mqtt            # what the service has been doing
+```
+
+The first real run records the messages already stored as its baseline instead of announcing
+them. Publishing needs a mosquitto client in the image (`mosquitto-client-ssl` or `-nossl`);
+without one the poller says so and fails. [README, "SMS over MQTT"](build-kit/README.md) has the
+details.
+
+**What the SMS pages do not do**, so it is not mistaken for a missing feature: there is no
+automatic forwarding inside the app (its own e-mail forwarding is manual, per selected message);
+the new-SMS count on the dashboard is a delta against the last time you opened the inbox, not
+read/unread state; the recipient picker reads a static list in `/etc/modem/phonebook.user`, not
+the SIM's phonebook; and opening the inbox commits uci, so it writes a little to flash each time.
+
+---
+
+## 10. Recovery
 
 ### Restore stock OpenWrt -> stock firmware
 

@@ -1,0 +1,73 @@
+#!/bin/sh /etc/rc.common
+# Forward arriving SMS to an MQTT broker, one poll at a time.
+#
+# The mechanism - and why this polls the modem instead of listening on the AT port - is in
+# /usr/sbin/sms-mqtt-poll. This file is only the service wrapper: it waits for the AT port,
+# starts one pass loop, and keeps it running.
+#
+# DISABLED BY DEFAULT, and deliberately: this image is published for any MR600 v1, and a broker
+# address is site-specific. Nothing here reaches for a broker until one is configured:
+#
+#   uci set sms_mqtt.main.broker='192.168.2.100'   # your broker
+#   uci set sms_mqtt.main.topic='mr600/sms'
+#   uci set sms_mqtt.main.enabled='1'
+#   uci commit sms_mqtt
+#   /etc/init.d/sms-mqtt enable && /etc/init.d/sms-mqtt start
+#
+# Test it before enabling, with a pass that publishes and prints nothing else:
+#   /usr/sbin/sms-mqtt-poll -n     # prints the payloads it would publish, changes nothing
+#
+# A mosquitto client is needed for the publish step, and is NOT a dependency of this package:
+# the two variants (mosquitto-client-ssl, mosquitto-client-nossl) provide the same binaries but
+# conflict with each other, so the choice belongs to the image, not to a package's DEPENDS. This
+# kit's local variant seed already installs mosquitto-client-ssl; a pass without one says so and
+# fails, rather than looking like a quiet modem.
+
+START=95
+STOP=05
+USE_PROCD=1
+
+POLL_INTERVAL_DEFAULT=30
+
+start_service() {
+	config_load sms_mqtt
+
+	local enabled interval port
+	config_get_bool enabled main enabled 0
+	config_get interval main interval "$POLL_INTERVAL_DEFAULT"
+	config_get port main device /dev/ttyUSB2
+
+	[ "$enabled" = 1 ] || {
+		logger -t sms-mqtt "not started: uci sms_mqtt.main.enabled is not 1"
+		return 0
+	}
+
+	# The port appears when the `option` driver binds 05c6:9025, which /etc/init.d/lte-reset does
+	# at START=18. This service starts later, but a boot where enumeration is slow would still
+	# have it race - and a service that gives up on a missing port looks like a broken modem.
+	local i=0
+	while [ ! -c "$port" ] && [ $i -lt 30 ]; do sleep 2; i=$((i+1)); done
+	[ -c "$port" ] || {
+		logger -t sms-mqtt "not started: $port is not there (is the modem bound?)"
+		return 0
+	}
+
+	# A non-numeric or silly small interval would either hang the loop or make it hammer the AT
+	# port against the UI's own use of it.
+	case "$interval" in
+		''|*[!0-9]*)	logger -t sms-mqtt "bad interval '$interval'; using ${POLL_INTERVAL_DEFAULT}s"
+				interval="$POLL_INTERVAL_DEFAULT" ;;
+	esac
+	[ "$interval" -lt 5 ] && {
+		logger -t sms-mqtt "interval $interval is too small; using 5s"
+		interval=5
+	}
+
+	logger -t sms-mqtt "publishing new SMS to MQTT every ${interval}s (port $port)"
+	procd_open_instance
+	procd_set_param command /bin/sh -c "while :; do /usr/sbin/sms-mqtt-poll; sleep $interval; done"
+	procd_set_param respawn
+	procd_set_param stdout 1
+	procd_set_param stderr 1
+	procd_close_instance
+}

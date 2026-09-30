@@ -1,0 +1,73 @@
+#!/bin/sh
+# MR600 v1 defaults for luci-app-sms-tool-js.
+#
+# The app's own defaults are written for a Huawei-style modem with a call-log interface: storage
+# SM, every port left empty, and a call-log daemon that holds the AT port open. Three of those
+# are wrong on this device (Qualcomm M9645, 05c6:9025), and each one fails SILENTLY - which is
+# why they are corrected here instead of being left to be discovered in the UI:
+#
+#   * an empty port option means sms_tool falls back to its compiled-in /dev/ttyUSB0. That device
+#     exists on this router - `option` binds the modem's interfaces 0-3 as ttyUSB0-3 - but
+#     interface 0 is not the AT port, so the inbox, the send page, USSD and the AT console all
+#     come up empty with no error shown anywhere. The AT port is interface 2: /dev/ttyUSB2.
+#   * storage SM holds nothing here; this modem stores in ME, and lte-reset already sets
+#     AT+CPMS="ME" for the same reason. A correct port with the wrong storage reads nothing too.
+#   * the call-log daemon holds /dev/ttyUSB2 open and polls AT+CLCC every ~2s, which fights both
+#     lte-reset and every sms_tool call. It is off by default upstream too; this makes that
+#     explicit, and it survives an upgrade that would otherwise re-enable it.
+#
+# The board guard makes this inert on anything else, and it exits rather than creating a config
+# for an app that is not installed.
+[ "$(cat /tmp/sysinfo/board_name 2>/dev/null)" = "tplink,mr600-v1-eu" ] || exit 0
+[ -f /etc/config/sms_tool_js ] || exit 0
+
+AT=/dev/ttyUSB2
+
+# The section can be missing on a config written by an older version. The app's own
+# setup_sms_tool_js.sh creates it, but nothing guarantees which of the two runs first.
+uci -q get "sms_tool_js.@sms_tool_js[0]" >/dev/null 2>&1 || uci add sms_tool_js sms_tool_js
+
+for o in readport sendport ussdport atport; do
+	uci set "sms_tool_js.@sms_tool_js[0].$o=$AT"
+done
+uci set "sms_tool_js.@sms_tool_js[0].storage=ME"
+# Show a long message as one entry rather than one row per segment. The app merges on
+# sender+timestamp+total, so two multipart messages from one sender in the same minute can still
+# be grouped together; anything that needs the real boundaries reads part/total from the MQTT
+# forwarder, which reports every segment as it is stored.
+uci set "sms_tool_js.@sms_tool_js[0].mergesms=1"
+# mergesms=1 sends the inbox down the app's merge path, and that path only produces rows when
+# `algorithm` is one of its two values. Left unset, neither branch runs and the table renders
+# EMPTY while the count (which comes from `status`, not from the merge path) still shows the
+# messages - the exact "N in modem storage but I cannot see any" symptom. Simple is the app's own
+# default and needs no `direction` (Advanced dereferences `direction` and throws without it).
+# The merge key is sender+timestamp+total, so distinct messages stay distinct and only multipart
+# segments combine.
+uci set "sms_tool_js.@sms_tool_js[0].algorithm=Simple"
+# The dashboard tile that carries the new-SMS count. With no `defmodems` config it runs in
+# sms-only mode off readport and never calls the md_* helpers - those belong to the third-party
+# modemdata package, which this kit deliberately does not install.
+uci set "sms_tool_js.@sms_tool_js[0].ontopsms=1"
+uci commit sms_tool_js
+
+# The app ships these two init scripts mode 0644 and only makes them executable in its own
+# setup_sms_tool_js.sh. That runs AFTER this script, because /etc/uci-defaults is executed in
+# `ls` order and 99-mr600-sms sorts before off_sms.sh and setup_sms_tool_js.sh. So an
+# `[ -x ... ]` guard here is FALSE on a fresh boot, and any `disable` against a non-executable
+# rc.common script fails (exec permission is denied; the error goes to /dev/null).
+#
+# Make them executable before touching them. That also un-breaks the app's own off_sms.sh,
+# which tries to disable this daemon and my_new_sms and silently fails at it for the same
+# reason. Without this, S99sms_tool_calllogd and S95my_new_sms stay enabled across a reflash.
+for s in sms_tool_calllogd my_new_sms; do
+	[ -f "/etc/init.d/$s" ] && chmod +x "/etc/init.d/$s" 2>/dev/null
+done
+
+if [ -f /etc/init.d/sms_tool_calllogd ]; then
+	/etc/init.d/sms_tool_calllogd stop 2>/dev/null
+	/etc/init.d/sms_tool_calllogd disable 2>/dev/null
+	logger -t sms "call-log daemon left disabled: it holds $AT open and polls AT+CLCC"
+fi
+
+logger -t sms "MR600 SMS defaults applied: ports=$AT, storage=ME, mergesms=1"
+exit 0

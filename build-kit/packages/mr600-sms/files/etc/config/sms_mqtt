@@ -1,0 +1,41 @@
+# MQTT forwarding of arriving SMS.
+#
+# Read by /usr/sbin/sms-mqtt-poll (with uci) and by /etc/init.d/sms-mqtt. Everything here is off
+# until `enabled` is set to 1 AND a broker is given: a broker address is site-specific, so this
+# file cannot ship one that would work for the next person to flash the image.
+
+config sms_mqtt 'main'
+	# 0 = the service starts nothing. See the header of /etc/init.d/sms-mqtt.
+	option enabled '0'
+
+	# The modem's AT port. /etc/init.d/lte-reset binds it at boot; sms_tool talks to it here.
+	option device '/dev/ttyUSB2'
+
+	# Where the module stores received messages. lte-reset sets AT+CPMS="ME" at boot for the same
+	# reason, and this modem's factory routing (CNMI 0,0,0,0,0) stores nothing at all until it is
+	# changed - so if ME reads empty while messages arrive, check lte-reset, not this option.
+	option storage 'ME'
+
+	# Seconds between passes. Each pass holds the AT port for a second or two, and a pass can
+	# collide with an SMS/USSD/AT action in LuCI - the longer the interval, the rarer that is.
+	option interval '30'
+
+	# Empty means nothing is published. Set it (and topic) to switch this on.
+	option broker ''
+	option port '1883'
+	option topic 'sms'
+
+	# -q/--retain passed straight to mosquitto_pub. QoS 0 is right for a LAN broker; retain 0
+	# keeps the broker from replaying the last message to every new subscriber.
+	option qos '0'
+	option retain '0'
+
+	# Optional broker credentials. uci is world-readable, so this is a convenience, not a secret
+	# store - use a dedicated broker account with ACLs if that matters.
+	option username ''
+	option password ''
+
+	# Fingerprints of the messages already announced. Rewritten only when the set changes, and
+	# only after a pass that read the inbox successfully - see the header of sms-mqtt-poll for
+	# why that ordering is what keeps a broker outage from losing or replaying messages.
+	option state '/etc/sms_mqtt.seen'

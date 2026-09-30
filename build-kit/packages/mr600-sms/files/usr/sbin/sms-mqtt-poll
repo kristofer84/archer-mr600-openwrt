@@ -1,0 +1,266 @@
+#!/usr/bin/env ucode
+// sms-mqtt-poll - one pass: publish the SMS the broker has not been told about yet.
+//
+// Run once per interval by /etc/init.d/sms-mqtt. One pass and not a loop, so it can be run by
+// hand and watched: `sms-mqtt-poll -n` prints the payloads it would publish instead of
+// publishing them, and leaves the state file alone.
+//
+// WHY POLLING AND NOT AN AT LISTENER. AT+CNMI=2,1 (set by /etc/init.d/lte-reset) makes the
+// module push a +CMTI URC the moment a message arrives, so a process holding /dev/ttyUSB2 open
+// could publish at the instant of arrival - which is what "forward on arrival" sounds like. It
+// is the wrong trade here: that port is shared. lte-reset talks to it at every boot, and every
+// SMS/USSD/AT action in LuCI opens it too. A long-lived reader would take bytes from those and
+// they from it, and the failure looks like a modem fault rather than a port conflict. A pass
+// takes a second or two every interval, which also keeps the port free for the UI. What is lost
+// is only latency: a message is published up to one interval after it arrives.
+//
+// WHY THE STATE FILE, AND WHY IT IS ONLY TRUSTED WHEN THE READ SUCCEEDED. `sms_tool recv` asks
+// for AT+CMGL=4 - the WHOLE storage area - every time, so there is no cursor to resume from and
+// no flag that says "this one is new". The set from the previous pass is therefore the baseline,
+// and the difference is what gets published. Two consequences that matter:
+//   * First pass on a modem (no state file): the inbox is recorded WITHOUT publishing, so
+//     installing this on a device that already holds messages does not replay them to the
+//     broker as if they had just arrived.
+//   * A failed or partial read must not be allowed to look like "everything was deleted". If
+//     reading the inbox fails, the state file is left exactly as it was and the pass reports an
+//     error. If it were overwritten with an empty set, the next good pass would republish the
+//     entire inbox.
+//
+// Delivery is at-least-once, never at-most-once: a fingerprint is only written to the state file
+// once its publish reported success, so a broker that is down means the message is retried on
+// the next pass rather than lost. A publish that succeeds but is not recorded (process killed in
+// between) repeats on the next pass; consumers should key on sender+timestamp+text rather than
+// assume exactly-once.
+'use strict';
+
+import { access, popen, readfile, writefile } from 'fs';
+import { cursor } from 'uci';
+
+const CONFIG = 'sms_mqtt';
+const SECTION = 'main';
+const MOSQUITTO_PUB = '/usr/bin/mosquitto_pub';
+
+const uci = cursor();
+const dry_run = (ARGV[0] == '-n' || ARGV[0] == '--dry-run');
+
+function opt(name, fallback) {
+	const v = uci.get(CONFIG, SECTION, name);
+
+	return (v == null || length(v) == 0) ? fallback : v;
+}
+
+/* Single-quote for /bin/sh. Inside single quotes the shell expands nothing, so the only
+   character that needs care is the quote itself: close, emit an escaped quote, reopen. */
+function sq(s) {
+	return `'${replace(s, "'", "'\\''")}'`;
+}
+
+function run(cmd) {
+	const p = popen(cmd, 'r');
+
+	if (p == null)
+		return { code: -1, out: '' };
+
+	const out = p.read('all');
+	const code = p.close();
+
+	return { code: (code == null ? -1 : code), out: out ? out : '' };
+}
+
+/* The inbox, or null if it could not be read. The JSON is the success test as well as the
+   payload: sms_tool prints `{"msg":[` before it starts reading, so a timeout or a half-answer
+   leaves truncated JSON that fails to parse - which is exactly the case that must not be
+   mistaken for an empty inbox. The exit status is checked too, but it is the weaker of the two,
+   because the modem can answer ERROR and still leave sms_tool exiting 0. */
+function read_inbox(device, storage) {
+	const r = run(`timeout 25 /usr/bin/sms_tool -j -s ${sq(storage)} -d ${sq(device)} recv 2>/dev/null`);
+
+	if (r.code != 0 || !length(r.out))
+		return null;
+
+	let data;
+
+	try {
+		data = json(trim(r.out));
+	} catch (e) {
+		return null;
+	}
+
+	if (type(data) != 'object' || type(data.msg) != 'array')
+		return null;
+
+	return data.msg;
+}
+
+/* A one-line key for a message, with no newlines in it - the state file is line-based. Only
+   fields that cannot contain a newline take part, plus the text LENGTH rather than the text:
+   sms_tool escapes newlines in its JSON, but they are real newlines again once parsed, and a
+   length is enough to separate two messages that share a sender second. Two genuinely identical
+   messages (same sender, same second, same part, same length) are indistinguishable here and
+   count as one; that is a deliberate simplification over hashing every body on an embedded CPU. */
+function fingerprint(m) {
+	return `${m.sender}|${m.timestamp}|${m.total || 1}|${m.part || 1}|${length(m.content || '')}`;
+}
+
+function read_seen(path) {
+	const txt = readfile(path);
+
+	if (txt == null)
+		return null;
+
+	const seen = {};
+
+	for (let line in split(txt, '\n'))
+		if (length(trim(line)))
+			seen[trim(line)] = true;
+
+	return seen;
+}
+
+function build_payload(m, o) {
+	const payload = {
+		event: 'sms',
+		device: o.device,
+		storage: o.storage,
+		index: m.index,
+		sender: m.sender,
+		timestamp: m.timestamp,
+		text: m.content
+	};
+
+	/* A segment of a concatenated message says so, so a consumer can join them. The modem
+	   needs CNMI+CPMS set to store each segment (lte-reset does), and the app's inbox merges
+	   them for display only when its own `mergesms` option is on - this reports the truth. */
+	if (m.total > 1) {
+		payload.part = m.part;
+		payload.total = m.total;
+		payload.reference = m.reference;
+	}
+
+	return payload;
+}
+
+function publish(m, o) {
+	const payload = sprintf('%J', build_payload(m, o));
+	const cmd = [
+		'timeout', '15', MOSQUITTO_PUB,
+		'-h', o.broker,
+		'-p', o.port,
+		'-t', o.topic,
+		'-q', o.qos,
+		'-m', payload
+	];
+
+	if (o.retain == '1')
+		push(cmd, '-r');
+
+	if (length(o.username)) {
+		push(cmd, '-u', o.username);
+
+		if (length(o.password))
+			push(cmd, '-P', o.password);
+	}
+
+	if (dry_run) {
+		printf('would publish to %s: %s\n', o.topic, payload);
+		return true;
+	}
+
+	const r = run(join(' ', map(cmd, sq)));
+
+	if (r.code != 0) {
+		warn(`mosquitto_pub failed (${r.code}) for a message from ${m.sender}\n`);
+		return false;
+	}
+
+	return true;
+}
+
+function main() {
+	const o = {
+		device: opt('device', '/dev/ttyUSB2'),
+		storage: opt('storage', 'ME'),
+		broker: opt('broker', ''),
+		port: opt('port', '1883'),
+		topic: opt('topic', 'sms'),
+		qos: opt('qos', '0'),
+		retain: opt('retain', '0'),
+		username: opt('username', ''),
+		password: opt('password', ''),
+		state: opt('state', '/etc/sms_mqtt.seen')
+	};
+
+	if (!length(o.broker)) {
+		warn('no broker set (uci sms_mqtt.main.broker); nothing to publish\n');
+		return 0;
+	}
+
+	if (!dry_run && !access(MOSQUITTO_PUB)) {
+		warn(`${MOSQUITTO_PUB} is missing - install a mosquitto client (the smoke test in\n`);
+		warn('build-kit/README.md, "SMS over MQTT", says which package this image carries)\n');
+		return 1;
+	}
+
+	const msgs = read_inbox(o.device, o.storage);
+
+	if (msgs == null) {
+		warn(`could not read the inbox from ${o.device} (storage ${o.storage}); state file kept,` +
+		     ` so nothing is republished\n`);
+		return 1;
+	}
+
+	const seen = read_seen(o.state);
+	const keep = [];
+	let published = 0, failed = 0;
+
+	/* No state file yet: this is the first pass on this modem. Record what is already there as
+	   the baseline and publish none of it - otherwise installing this on a modem holding 40 old
+	   messages would announce all 40 as if they had just arrived. */
+	if (seen == null) {
+		for (let m in msgs)
+			push(keep, fingerprint(m));
+
+		if (!dry_run)
+			writefile(o.state, join('\n', keep) + '\n');
+
+		printf('first pass: recorded %d message(s) as the baseline, published nothing\n',
+		       length(keep));
+		return 0;
+	}
+
+	for (let m in msgs) {
+		const fp = fingerprint(m);
+
+		if (seen[fp]) {
+			push(keep, fp);
+			continue;
+		}
+
+		if (publish(m, o)) {
+			push(keep, fp);
+			published++;
+		}
+		else {
+			/* Deliberately NOT recorded: the next pass retries it. */
+			failed++;
+		}
+	}
+
+	/* Rewriting an unchanged file is a flash write for nothing, and this runs unattended. */
+	const next = join('\n', keep) + '\n';
+
+	if (!dry_run && next != readfile(o.state))
+		writefile(o.state, next);
+
+	/* Quiet when there is nothing to report. This runs every interval under procd, and its stdout
+	   goes to the syslog ring buffer, so a heartbeat every 30 s would push everything else out of
+	   a small buffer within hours. A pass that published something, that has something pending,
+	   or that was asked to be a dry run, speaks; an idle pass does not. */
+	if (dry_run || published || failed)
+		printf('%d in the inbox, %d new published, %d pending retry\n',
+		       length(msgs), published, failed);
+
+	return failed ? 1 : 0;
+}
+
+exit(main());

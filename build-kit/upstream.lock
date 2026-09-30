@@ -14,3 +14,10 @@ FEED_LUCI=0818828b3bf7ccc71f9a45a34873fb63826a2802
 FEED_ROUTING=4b9891b9136259f93294a424507ed24c5e8c1cbd
 FEED_TELEPHONY=5d68d53c160a325ea9d03fce393e051573bcc736
 FEED_VIDEO=7dd5eba75d4b68785b4f7c5b3b086e6dfbd6644c
+
+# The SMS app is deliberately NOT a feed: it is committed under packages/, so a build clones no
+# third-party repo and the code cannot disappear because a repo moved or went private. This is
+# the upstream commit it was taken from (4IceG/luci-app-sms-tool-js), recorded so that "is this
+# the code we reviewed?" stays answerable - see packages/README.md, "Is the vendored app
+# unmodified?", for the two commands that check it.
+SMSJS_COMMIT=0bd41a0b64fa9a41272f391fcd0900fc1115af6e

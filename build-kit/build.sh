@@ -79,12 +79,31 @@ src-git luci https://git.openwrt.org/project/luci.git^$FEED_LUCI
 src-git routing https://git.openwrt.org/feed/routing.git^$FEED_ROUTING
 src-git telephony https://git.openwrt.org/feed/telephony.git^$FEED_TELEPHONY
 src-git video https://github.com/openwrt/video.git^$FEED_VIDEO
+# This kit's own packages (the vendored SMS app and the MR600 SMS glue). src-link, not src-git:
+# the code is committed in this repository next to the image config that ships it, so a build
+# does not clone a third-party repo and the artifact and its source are the same commit.
+# See packages/README.md.
+src-link mr600 $KIT/packages
 FEEDS
 ./scripts/feeds update -a
 for f in packages luci routing telephony video; do
   echo "   feed $f at $(git -C "feeds/$f" rev-parse HEAD)"
 done
+echo "   feed mr600 is local ($KIT/packages): $(ls "$KIT/packages" | tr '\n' ' ')"
 ./scripts/feeds install -a
+# Assert the local feed really installed. `feeds install -a` is the step that turns the local
+# directory into package/feeds/mr600/*, and if it does not (a src-link quirk, a renamed
+# directory), the config symbols below resolve to nothing and `make defconfig` drops them
+# SILENTLY - the image then builds for two hours and comes out without SMS.
+for p in luci-app-sms-tool-js mr600-sms; do
+  if [ -e "package/feeds/mr600/$p" ]; then
+    echo "   ok      local feed installed $p"
+  else
+    echo "   ERROR: the local feed did not install $p (expected package/feeds/mr600/$p)" >&2
+    echo "          check the src-link line in feeds.conf and that $KIT/packages/$p/Makefile exists" >&2
+    exit 1
+  fi
+done
 
 echo "==> configure"
 # Seed FIRST, then defconfig. The other order lets the tree resolve for the default target
@@ -108,9 +127,15 @@ grep -q "CONFIG_TARGET_ramips_mt7621=y" .config || {
   echo "   ERROR: target did not resolve to ramips/mt7621" >&2; exit 1; }
 grep -q "DEVICE_tplink_mr600-v1-eu=y" .config || {
   echo "   ERROR: the mr600 device is not selected" >&2; exit 1; }
+# Same reasoning as the feed check above: a package symbol whose package did not resolve is
+# dropped by defconfig without a word, and the first sign of it is a missing page on the router.
+for sym in CONFIG_PACKAGE_luci-app-sms-tool-js CONFIG_PACKAGE_mr600-sms CONFIG_PACKAGE_sms-tool; do
+  grep -q "^$sym=y" .config || {
+    echo "   ERROR: $sym is not set in .config - the package did not resolve" >&2; exit 1; }
+done
 echo "   target ok"
 echo "   target is:"
-grep -E "CONFIG_TARGET_ramips_mt7621_DEVICE_tplink_mr600-v1-eu|CONFIG_PACKAGE_(luci|sms-tool)" .config | sed 's/^/     /'
+grep -E "CONFIG_TARGET_ramips_mt7621_DEVICE_tplink_mr600-v1-eu|CONFIG_PACKAGE_(luci|sms-tool|luci-app-sms-tool-js|mr600-sms)" .config | sed 's/^/     /'
 
 echo "==> toolchain"
 # Needed before the rootfs is packaged, because at-tty has to be compiled and
