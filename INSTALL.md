@@ -271,24 +271,67 @@ Work down this list - each check rules out one thing:
 
 ## 8. WiFi as an access point (manual, not fully verified)
 
-The radios load with firmware, but the stock OpenWrt default leaves the interfaces disabled. To
-turn on an AP:
+Two radios load with firmware - `radio0` (2.4 GHz, MT7603E) and `radio1` (5 GHz, MT7612E, 802.11ac)
+- but the image leaves both **disabled** and carries **no `wifi-iface`** for either, so there is
+nothing for a client to join until you add one. The `default_radio0`/`default_radio1` names some
+guides use do not exist here. Enable a radio, give it an AP interface, and commit:
 
 ```sh
+# 2.4 GHz
 uci set wireless.radio0.disabled=0
+uci set wireless.radio0.htmode='HT20'
+uci set wireless.ap0=wifi-iface
+uci set wireless.ap0.device='radio0'
+uci set wireless.ap0.mode='ap'
+uci set wireless.ap0.network='lan'
+uci set wireless.ap0.ssid='your-ssid'
+uci set wireless.ap0.encryption='sae'           # or 'psk2'
+uci set wireless.ap0.key='your-key'
+
+# 5 GHz, 802.11ac
 uci set wireless.radio1.disabled=0
-uci set wireless.default_radio0.disabled=0
-uci set wireless.default_radio1.disabled=0
-uci set wireless.default_radio0.ssid='your-ssid'
-uci set wireless.default_radio0.encryption='psk2'
-uci set wireless.default_radio0.key='your-key'
+uci set wireless.radio1.channel='36'
+uci set wireless.radio1.htmode='VHT80'
+uci set wireless.ap1=wifi-iface
+uci set wireless.ap1.device='radio1'
+uci set wireless.ap1.mode='ap'
+uci set wireless.ap1.network='lan'
+uci set wireless.ap1.ssid='your-ssid'           # same SSID -> clients roam between bands
+uci set wireless.ap1.encryption='sae'
+uci set wireless.ap1.key='your-key'
+
 uci commit wireless
 wifi reload
 ```
 
+`radio1` on channel 36 comes up as an 80 MHz VHT (802.11ac) AP; `iw dev phy1-ap0 info` and
+`iwinfo phy1-ap0 info` show the channel and `HT Mode: VHT80`.
+
+### The image's wpad has no 802.11v - and it fails loudly
+
+`config.seed` installs **`wpad-basic-mbedtls`**, which supports 802.11r (FT) and 802.11k but **not**
+802.11v BSS Transition. Setting `bss_transition=1` does not degrade gracefully - hostapd refuses to
+start the interface:
+
+```
+daemon.err hostapd: Line 49: unknown configuration item 'bss_transition'
+daemon.err hostapd: 1 errors found in configuration file '<inline>'
+daemon.err hostapd: hostapd.add_iface failed for phy phy1 ifname=phy1-ap0
+```
+
+and the radio ends up with no AP at all (`iwinfo` shows `Channel: 0 (unknown GHz)`, `Txpower: 0
+dBm`). If you need 802.11v, build a local variant with the full supplicant by adding to
+`build-kit/config.seed.local`:
+
+```
+# CONFIG_PACKAGE_wpad-basic-mbedtls is not set
+CONFIG_PACKAGE_wpad-mbedtls=y
+```
+
 This is the least-verified part of this repo - the modem uplink is the part proven unattended. If
-WiFi misbehaves, the build kit's [README](build-kit/README.md) has the radio details, and if it
-is dead after an install check `dmesg | grep -i radio` and the `radio` partition first.
+WiFi misbehaves, `logread | grep hostapd` names the option it disliked, and the build kit's
+[README](build-kit/README.md) has the radio details; if a radio is dead after an install, check
+`dmesg | grep -i radio` and the `radio` partition first.
 
 ---
 
