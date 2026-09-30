@@ -39,7 +39,16 @@ cd "$TREE"
 echo "   openwrt at $(git rev-parse HEAD)"
 
 echo "==> apply PR #25074 (v1-additive, 4 files)"
-if git apply --check "$KIT/patches/0001-pr25074-v1-additive.patch" 2>/dev/null; then
+# Re-runnable on an existing tree, because re-running build.sh on one is a documented workflow:
+# baking in a radio-calibration blob means re-running the kit (README.md, "Calibration"), and the
+# kconfig recovery note says to re-run it too. On an already-patched tree the patch has no context
+# left to match, so "the patch does not apply" would be reported for a tree that is already in the
+# state we want - which reads as "upstream has moved" and sends you hand-editing four files that
+# are already correct. The marker is the PR's own device entry. A half-applied tree is still
+# caught: apply-local-changes.py asserts every one of its anchors immediately below.
+if grep -q 'tplink_mr600-v1-eu' target/linux/ramips/image/mt7621.mk 2>/dev/null; then
+  echo "   ok      already applied on this tree (tplink_mr600-v1-eu is in mt7621.mk)"
+elif git apply --check "$KIT/patches/0001-pr25074-v1-additive.patch" 2>/dev/null; then
   git apply "$KIT/patches/0001-pr25074-v1-additive.patch"
   echo "   applied cleanly"
 elif git apply -3 "$KIT/patches/0001-pr25074-v1-additive.patch" 2>/dev/null; then
@@ -118,6 +127,38 @@ mkdir -p "$BLF/usr/bin"
 "$TC" -static -Os -o "$BLF/usr/bin/at-tty" "$KIT/files/usr/bin/at-tty.c"
 [ -x "$BLF/usr/bin/at-tty" ] || { echo "   ERROR: at-tty did not build" >&2; exit 1; }
 echo "   ok  $BLF/usr/bin/at-tty"
+
+echo "==> host ucode (it is what compiles the MQTT poller for verify-image.sh)"
+# Not every configuration builds this: luci.mk only pulls ucode/host in when its ucode template
+# minification is on, and this kit's app ships no templates. Without it verify-image.sh cannot
+# syntax-check usr/sbin/sms-mqtt-poll, and a check that quietly degrades to a note is worse than
+# no check at all - which is exactly how the first two builds of this went. Build it deliberately.
+# It is a host tool and not part of the image, so a failure here is reported and the build goes on.
+#
+# WHERE IT LANDS, measured rather than assumed: ucode/host installs into staging_dir/hostpkg/bin
+# (STAGING_DIR_HOSTPKG), NOT staging_dir/host/bin. Both this check and verify-image.sh looked in
+# host/bin only, which is why the poller went unchecked and reported a note instead of an ok.
+# The target name, `package/utils/ucode/host/compile`, is the correct one (confirmed: ucode/host
+# has no install target of its own; compile does the install).
+host_ucode() {
+  local u
+  for u in "$TREE/staging_dir/hostpkg/bin/ucode" "$TREE/staging_dir/host/bin/ucode"; do
+    [ -x "$u" ] && { printf '%s' "$u"; return 0; }
+  done
+  return 1
+}
+
+if u=$(host_ucode); then
+  echo "   ok      already built ($u)"
+else
+  if make -j"$(nproc)" package/utils/ucode/host/compile > "$TREE/.host-ucode.build.log" 2>&1 &&
+     u=$(host_ucode); then
+    echo "   ok      built ($u)"
+  else
+    echo "   WARNING: no host ucode, so verify-image.sh will report the poller as NOT checked" >&2
+    echo "            (log: $TREE/.host-ucode.build.log)" >&2
+  fi
+fi
 
 echo "==> build (long: kernel and packages)"
 make -j"$(nproc)"
