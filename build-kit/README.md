@@ -66,6 +66,56 @@ suggests. glib/libqmi-heavy sets compress worse than the average, so budget by 2
 stays conservative. The firmware partition is 15.6 MB, so a 3.5 MB kernel plus an 8.5 MB squashfs
 leaves ~3.5 MB - it fits, with less room than a 3:1 assumption would have predicted.
 
+#### Local files: `files.local/`
+
+`config.seed.local` adds *packages*. Its file counterpart is `build-kit/files.local/` (also
+gitignored): the tree is copied over the target's `base-files/`, so anything in it becomes an
+ordinary rootfs file, and a script with the `rc.common` shebang is enabled by `rootfs.mk` just like
+a base-files one. `build.sh` records what it copied in `$TREE/.files.local.applied` (sha256 + path)
+and `verify-image.sh` fails if a recorded file is missing from the *packed* rootfs or has changed.
+
+Why this exists: a site-to-site VPN profile carries a **private key**, so it cannot be committed to
+this public repository. The site router is the OpenVPN client of a server elsewhere, and its
+profile (inline `<ca>/<cert>/<key>`) plus a one-file procd service live in `files.local/`:
+
+```
+build-kit/files.local/etc/openvpn/mr600.conf        (mode 600; the profile)
+build-kit/files.local/etc/init.d/openvpn-mr600       (the service that runs it)
+```
+
+**OpenVPN in this OpenWrt ships no init script** - the package provides only
+`/usr/share/openvpn/*.uc` helpers and a hotplug hook - so that service is not optional glue, it is
+the only thing that starts the tunnel. It runs `openvpn --config /etc/openvpn/mr600.conf` under
+procd with `respawn`. (The data channel lands on `ovpn-dco`, so `kmod-ovpn-backports` is a real
+dependency, not just a package-name in `apk`'s output.)
+
+### Gotchas that cost real time on hardware
+
+**A kernel module installs only into the kernel it was built for.** The OpenWrt kernel package
+version is a hash of the kernel `.config`: `kernel-6.18.52~<hash>`. Two images from the *same*
+OpenWrt commit can carry different kernels if their package selections change the kernel config -
+adding `kmod-tun`/`kmod-ovpn-backports` does. So a `kmod-tun` built for a local variant cannot be
+`apk add`ed onto a generic image of the same commit; apk refuses with `breaks: ... kernel=...`,
+correctly. Measured 2026-09-30: generic `b2350917...`, local variant `29b5db39...`. The snapshot
+package feeds carry no `kmod-*` at all, so there is nothing matching to fetch. The only fix is a
+consistent image - flash the variant.
+
+**"Keep settings" keeps what the *donor* system listed, not what the new image ships.** The
+sysupgrade backup list is built from the running system's `keep.d`, so a directory is kept only if
+a package **installed on the donor** claims it. Flashing *from* a generic image (no `openvpn`) onto
+a variant that has it means `/etc/openvpn/` is not in the list and the profile is lost, even though
+the new image can run it; the reverse order keeps it. Recover from a config backup taken before the
+flash:
+
+```sh
+sysupgrade -b /tmp/cfg.tgz           # on the old system, before flashing
+tar -xzf cfg.tgz -C / etc/openvpn/mr600.conf   # later, to put one file back
+```
+
+**A local image is identifiable only by its records.** `DISTRIB_REVISION` is identical to the
+generic build's of the same commit, so keep `config.seed.local`, `files.local/` and the build log
+with the image - otherwise "same revision" quietly becomes "same image".
+
 ## Calibration: generic by default, per unit by nature
 
 The WiFi calibration is **per unit** - it carries that unit's RF calibration and a MAC seed - so

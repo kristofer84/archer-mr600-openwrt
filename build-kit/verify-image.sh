@@ -106,6 +106,31 @@ else
 	echo "   ok      generic image: no config.seed.local was applied to this tree"
 fi
 
+echo "==> local files overlay"
+# The file counterpart of the seed: build.sh copies files.local/ into base-files and records what
+# it copied in .files.local.applied (sha256 + path). Check both that every recorded file reached
+# the *packed* rootfs and that its content is unchanged - a local file that silently did not land
+# (a typo in the path, a directory vs file) is exactly the failure this record exists to catch.
+if [ -f "$TREE/.files.local.applied" ]; then
+	lf_missing=0
+	lf_count=0
+	while read -r lf_hash lf_path; do
+		[ -n "$lf_path" ] || continue
+		lf_count=$((lf_count + 1))
+		lf_hit=$(find build_dir -path "*/root-ramips/$lf_path" -print -quit 2>/dev/null || true)
+		if [ -z "$lf_hit" ]; then
+			bad "local file did not reach the rootfs: $lf_path"
+			lf_missing=1
+		elif [ "$(sha256sum "$lf_hit" | cut -d' ' -f1)" != "$lf_hash" ]; then
+			bad "local file differs in the rootfs: $lf_path"
+			lf_missing=1
+		fi
+	done < "$TREE/.files.local.applied"
+	[ "$lf_missing" = 0 ] && ok "all $lf_count local files are in the rootfs, unchanged"
+else
+	echo "   ok      no files.local overlay was applied to this tree"
+fi
+
 echo "==> calibration policy"
 if [ -e "$BLF/root/radio-cal.bin" ]; then
 	echo "   note    a calibration blob is baked in as a fallback (non-generic build)"

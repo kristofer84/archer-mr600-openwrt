@@ -71,6 +71,26 @@ fi
 echo "==> apply this project's changes"
 python3 "$KIT/apply-local-changes.py"
 
+echo "==> local files overlay"
+# Optional and gitignored: the file counterpart of config.seed.local. Use it for files that
+# belong in the image but must NOT be in this public repository - the real case here is a
+# site-to-site OpenVPN profile, which carries a private key, plus the service that runs it.
+# Copied into the target's base-files, so they land in the rootfs as ordinary files; scripts
+# get enabled by rootfs.mk the same way base-files ones do (see README.md, "Local variants").
+# Recorded like config.seed.local, because a local-variant image is otherwise indistinguishable
+# from a generic one once it is running.
+BF="$TREE/target/linux/ramips/mt7621/base-files"
+if [ -d "$KIT/files.local" ]; then
+  echo "   LOCAL files: overlaying $KIT/files.local into base-files"
+  cp -a "$KIT/files.local/." "$BF/"
+  ( cd "$KIT/files.local" && find . -type f | sed 's|^\./||' | sort ) | while read -r f; do
+    printf '%s  %s\n' "$(sha256sum "$KIT/files.local/$f" | cut -d' ' -f1)" "$f"
+  done > "$TREE/.files.local.applied"
+else
+  echo "   GENERIC image: no files.local present"
+  rm -f "$TREE/.files.local.applied"
+fi
+
 echo "==> feeds (needed before the package symbols resolve)"
 # Written from upstream.lock, not copied from feeds.conf.default, so every feed is at a fixed commit.
 cat > feeds.conf <<FEEDS

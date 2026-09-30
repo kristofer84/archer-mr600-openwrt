@@ -25,3 +25,7 @@ rootfs_*/
 __pycache__/
 *.pyc
 build-kit/config.seed.local
+# The file counterpart of config.seed.local: local files that belong in the image but must not be
+# in this public repository (e.g. a site-to-site OpenVPN profile with a private key, and the
+# service that runs it). See build-kit/README.md, "Local variants".
+build-kit/files.local/
