@@ -38,7 +38,11 @@ fi
 # power-cycle" path and leaves it wedged, with wwan never coming up.
 uci set network.wwan0.proto='qmi'
 uci set network.wwan0.device='/dev/cdc-wdm0'
-uci set network.wwan0.pdptype='ipv4'
+# Default only. pdptype is a preference, not a requirement: a site may want ipv4v6 for the carrier
+# /64, and this script runs on the first boot after a flash - which is exactly the moment such a
+# hand-set value is not yet in place, and also the moment an overlay reset would silently undo one.
+# An unguarded `uci set` here therefore reads as a default and behaves as a clobber.
+[ -n "$(uci -q get network.wwan0.pdptype)" ] || uci set network.wwan0.pdptype='ipv4'
 # No APN is set here on purpose. The init script derives it from the SIM's home
 # network (MCC/MNC) using /etc/mr600-apn-table, so one image works on any carrier.
 # To force one anyway - an unlisted carrier, or a specific APN - uncomment:
