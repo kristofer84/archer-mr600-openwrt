@@ -75,19 +75,36 @@ a base-files one. `build.sh` records what it copied in `$TREE/.files.local.appli
 and `verify-image.sh` fails if a recorded file is missing from the *packed* rootfs or has changed.
 
 Why this exists: a site-to-site VPN profile carries a **private key**, so it cannot be committed to
-this public repository. The site router is the OpenVPN client of a server elsewhere, and its
-profile (inline `<ca>/<cert>/<key>`) plus a one-file procd service live in `files.local/`:
+this public repository. The site router is the OpenVPN client of a server elsewhere, and what must
+be in the image but not in git is the profile, the service that runs it, and the service that
+publishes the router's own status to MQTT:
 
 ```
-build-kit/files.local/etc/openvpn/mr600.conf        (mode 600; the profile)
-build-kit/files.local/etc/init.d/openvpn-mr600       (the service that runs it)
+build-kit/files.local/etc/openvpn/mr600.conf        (mode 600; the profile, inline <ca>/<cert>/<key>)
+build-kit/files.local/etc/init.d/openvpn-site        (the procd service that runs the tunnel)
+build-kit/files.local/usr/bin/mr600-status.sh        (publishes LTE/router status to the broker)
+build-kit/files.local/etc/init.d/mr600-status        (the procd service that runs it every 60 s)
 ```
+
+**Neither service ships in the image, and that is the point.** The hand-set configuration of a site
+router - the VPN profile, its init script, and the status publisher (whose broker address and topic
+prefix are site config, not firmware) - is exactly what a reflash takes away, and the symptom is
+quiet: the tunnel does not come up and the dashboard freezes at the last values rather than
+anything reporting an error. `config.seed` provides the packages (`openvpn-openssl`,
+`mosquitto-client-ssl`, `qmi-utils`); `files.local/` provides the four files. A preflight on the
+device side is what catches the case where the files are missing; the checks in `verify-image.sh`
+catch the case where they did not make it into the image.
 
 **OpenVPN in this OpenWrt ships no init script** - the package provides only
-`/usr/share/openvpn/*.uc` helpers and a hotplug hook - so that service is not optional glue, it is
+`/usr/share/openvpn/*.uc` helpers and a hotplug hook - so `openvpn-site` is not optional glue, it is
 the only thing that starts the tunnel. It runs `openvpn --config /etc/openvpn/mr600.conf` under
-procd with `respawn`. (The data channel lands on `ovpn-dco`, so `kmod-ovpn-backports` is a real
-dependency, not just a package-name in `apk`'s output.)
+procd with `respawn`, deliberately **not** as a netifd `openvpn` interface: that proto has no
+`defaultroute` option and calls `proto_add_dynamic_defaults` unconditionally, so the tunnel would
+take the default route and pull the whole site's internet through the home link (and leave the site
+routeless when home is down). (The data channel lands on `ovpn-dco`, so `kmod-ovpn-backports` is a
+real dependency, not just a package-name in `apk`'s output.) The publisher, `mr600-status.sh`, reads
+`uqmi`/`qmicli` on the box that owns the QMI device and publishes over the tunnel - it replaces the
+retired `tp-link-bridge`, which polled the **stock** HTTP API that OpenWrt does not have.
 
 ### Gotchas that cost real time on hardware
 
