@@ -1,0 +1,1607 @@
+# operator catalog for the LuCI APN picker, from the modem's NetIspInfo.ini
+# source revision 18101801  sha256 3f8b2a6d19fdeb4b512550bcbe319ffe9e291e30fe456fcebace2396910f3e09
+# MCCMNC	NAME	APN	USER	PASS	COUNTRY
+101	TEST	test			China
+20201	Cosmote	internet			Greece
+20202	Cosmote	internet			Greece
+20205	Vodafone	internet.vodafone.gr			Greece
+20205	Vodafone	internet	user	pass	Greece
+20214	Cyta	cytamobile			Greece
+20402	Tele2	internet.tele2.nl			Netherlands
+20403	MVNO NL	internet.mvno.mobi	mvno	mvno	Netherlands
+20404	Vodafone	live.vodafone.com			Netherlands
+20404	Truphone	truphone.com			Netherlands
+20404	EHRPD	VZWINTERNET			Netherlands
+20404	LTE - VZW	VZWINTERNET			Netherlands
+20404	CSpire	internet.cs4glte.com	Uniroam@inet.cs.com	cs3g	Netherlands
+20404	CTNET	ctnet	ctnet@mycdma.cn	vnet.mobi	Netherlands
+20404	8•ta	8ta.internet			Netherlands
+20404	HOT mobile	net.hotm			Netherlands
+20408	KPN	KPN4G.nl			Netherlands
+20408	MVNO NL	internet.mvno.mobi	mvno	mvno	Netherlands
+20408	Rabo Mobiel	rabo			Netherlands
+20408	UPC mobile	Internet.at.upcmobile.com			Netherlands
+20409	lyca	data.lycamobile.nl			Netherlands
+20410	KPN	portalmmm.nl			Netherlands
+20412	Telfort	internet			Netherlands
+20415	Ziggo	ziggo.dataxs.mobi			Netherlands
+20416	T-Mobile	internet			Netherlands
+20416	Ben Internet	internet.ben			Netherlands
+20416	Ben Internet	basic.internet.ben.data			Netherlands
+20420	Orange	internet			Netherlands
+20420	rabo.plus	rabo.plus			Netherlands
+20601	Proximus	internet.proximus.be			Belgium
+20601	Telenet Internet	telenetwap.be			Belgium
+20601	Virgin mobile	virgin-mobile.fr			Belgium
+20601	Internet	wisp.mobi.eastlink.ca			Belgium
+20601	NRJWEB	internet.proximus.be			Belgium
+20601	Internet	web.iusacellgsm.mx	iusacellgsm	iusacellgsm	Belgium
+20605	Telenet	telenetwap.be			Belgium
+20605	Voo	telenetwap.be			Belgium
+20608	O2 Internet	internet			Belgium
+20610	Mobistar	mworld.be			Belgium
+20610	Telenet	telenetwap.be			Belgium
+20620	Base Mobile	gprs.base.be	base	base	Belgium
+20800	Orange	orange.fr	orange	orange	France
+20801	Orange World	orange			France
+20801	Orange	orange-mib	orange	orange	France
+20801	Orange	nisginet			France
+20801	Carrefour WAP	ofnew.fr	orange	orange	France
+20801	VM WAP	ofnew.fr	orange	orange	France
+20801	NRJWEB	ofnew.fr	orange	orange	France
+20801	Tele2 WAP	ofnew.fr	orange	orange	France
+20802	Orange	orange.fr			France
+20809	SFR	websfr			France
+20810	SFR	websfr			France
+20810	SFR webphone	sl2sfr			France
+20810	NRJWEB	fnetnrj			France
+20810	Auchan WAP	wap65			France
+20810	Leclerc	wap66			France
+20810	CORIOLIS 4G	sl2sfr			France
+20810	CORIOLIS WAP	wapcoriolis			France
+20810	CORIOLIS	internetcoriolis			France
+20810	CORIOLIS WEB	fnetcoriolis			France
+20810	4G La Poste	sl2sfr			France
+20810	WEB La Poste	wapdebitel			France
+20810	Darty	wap68			France
+20810	Keyyo Mobile	internet68			France
+20810	Keyyo Mobile	wap68			France
+20810	Zero forfait	internet68			France
+20810	WAP RegloMobile	wap66			France
+20810	Internet Joe	sl2sfr			France
+20811	Sfr	websfr			France
+20813	Sfr	websfr			France
+20815	Free	free			France
+20816	Free	free			France
+20817	Legos	bornsip			France
+20820	Bouygues	ebouygtel.com			France
+20820	Bouygues Pro	a2bouygtel.com			France
+20821	Bouygues	ebouygtel.com			France
+20823	Virgin mobile	virgin-mobile.fr			France
+20826	NRJ WEB	fnetnrj			France
+20827	coriolis WEB	coriolis			France
+20888	Bouygues	ebouygtel.com			France
+21401	Vodafone	ac.vodafone.es	vodafone	vodafone	Spain
+21401	Vodafone	airtelwap.es	wap@wap	wap125	Spain
+21401	ONO	airtelwap.es			Spain
+21402	Movistar	movistar.es			Spain
+21403	Orange	internet			Spain
+21403	Orange	orangeworld	orange	orange	
+21403	JAZZTEL	jazzinternet			Spain
+21403	Simyo	gprs-service.com			Spain
+21403	Carrefour	carrefourinternet			Spain
+21403	MovilDIA	diainternet			Spain
+21403	MASMovil	internetmas			Spain
+21403	Happy	internettph			Spain
+21403	LCR	lcrinternet			Spain
+21403	LlamaYA	moreinternet			Spain
+21403	You Mobile	youinternet			Spain
+21403	IBERCOM	ibercominternet			Spain
+21403	IOS	inet.es			Spain
+21403	Euskaltel	internet.euskaltel.mobi	CLIENTE	EUSKALTEL	Spain
+21403	R	internet.mundo-r.com			Spain
+21403	PTV	inet.es			Spain
+21403	PTV	datos.es			Spain
+21403	Amena	orangeworld	orange	orange	Spain
+21404	Yoigo	internet			Spain
+21405	Movistar	movistar.es	movistar	movistar	Spain
+21405	Tuenti	tuenti.com	tuenti	tuenti	Spain
+21405	telecable	internet.telecable.es	telecable	telecable	Spain
+21405	Pepephone	gprs.pepephone.com			Spain
+21405	Movistar	movistar.es			Spain
+21406	Vodafone	ac.vodafone.es	vodafone	vodafone	Spain
+21406	Hits Mobile	test.hitsmobile.es			Spain
+21406	Lowi	lowi.private.omv.es	wap@wap	wap125	Spain
+21406	Lebara Mobile	gprsmov.lebaramobile.es			Spain
+21406	Telecable Mobile	internet.telecable.es			Spain
+21406	Eroski	gprs.eroskimovil.es	wap@wap	wap125	Spain
+21407	Movistar	movistar.es	MOVISTAR	MOVISTAR	Spain
+21407	Movistar	telefonica.es	telefonica	telefonica	Spain
+21407	JAZZTEL	jazzinternet			Spain
+21407	Telefonica	telefonica.es	telefonica	telefonica	Spain
+21407	T-2	internet.t-2.net			Spain
+21408	Euskaltel	internet.euskaltel.mobi	CLIENTE	EUSKALTEL	Spain
+21409	Orange	internet			Spain
+21409	Orange	orangeworld	orange	orange	Spain
+21416	Telecable	internet.telecable.es	telecable	telecable	Spain
+21417	R	internet.mundo-r.com			Spain
+21418	Ono	internet.ono.com			Spain
+21419	Simyo	gprs-service.com			Spain
+21421	Jazztel	jazzinternet			Spain
+21427	Truphone	truphone.com			Spain
+21432	Tuenti	tuenti.com	tuenti	tuenti	Spain
+21601	Telenor	net			Hungary
+21601	Telenor Online	online			Hungary
+21601	Djuice NET	net			Hungary
+21601	Djuice WAP	wap			Hungary
+21630	T-Mobile NET	internet			Hungary
+21630	T-Mobile H	internet.telekom			Hungary
+21670	Vodafone	internet.vodafone.net			Hungary
+21670	Vodafone	vitamax.internet.vodafone.net			Hungary
+21670	Tesco Internet	internet.tescomobile.hu			Hungary
+21803	HT Eronet WAP	wap.eronet.ba			Bosnia Herzegovina
+21803	HT Eronet GPRS	gprs.eronet.ba			Bosnia Herzegovina
+21805	Telekom	mobisgprs1			Bosnia Herzegovina
+21805	MTEL GPRS	3g3			Bosnia Herzegovina
+21901	T-Mobile HR	web.htgprs			Croatia
+21901	bonbon Internet	web.htgprs			Croatia
+21902	Tele2	internet.tele2.hr			Croatia
+21910	VIP	gprs0.vipnet.hr			Croatia
+21910	Broadband	data.vip.hr	38591	38591	Croatia
+22001	Mobtel	internet	mobtel	gprs	Serbia and Montenegro
+22001	Telenor Internet	internet	telenor	gprs	Serbia and Montenegro
+22002	Telenor MNE	internet	gprs	gprs	Serbia and Montenegro
+22003	Telekom Srbija	gprsinternet	mts	64	Serbia and Montenegro
+22004	Monet	gprs.monetcg.com			Serbia and Montenegro
+22004	T-Mobile	tmcg-wnw	38267	38267	Serbia and Montenegro
+22201	TIM	ibox.tim.it			Italy
+22201	TIM	wap.tim.it			Italy
+22201	Tiscali	tiscalimobileinternet			Italy
+22201	Internet	web.iusacellgsm.mx	iusacellgsm	iusacellgsm	Italy
+22201	NOVERCA WEB	web.noverca.it			Italy
+22201	Coop Italia	web.coopvoce.it			Italy
+22201	KENA	web.kenamobile.it			Italy
+22201	FASTWEB	apn.fastweb.it			Italy
+22207	Noverca	web.noverca.it			Italy
+22208	Fastweb	apn.fastweb.it			Italy
+22210	Vodafone	web.omnitel.it			Italy
+22210	Vodafone	mobile.vodafone.it			Italy
+22210	HO	web.ho-mobile.it			Italy
+22210	Erg Mobile	mobile.erg.it			Italy
+22210	PosteMobile	wap.postemobile.it			Italy
+22210	ErgMobile WAP	mobile.erg.it			Italy
+22215	BT Mobile	internet.btitalia.it			Italy
+22231	Poste Mobile	wap.postemobile.it			Italy
+22231	Poste Mobile	internet.postemobile.it			Italy
+22233	PosteMobile	wap.postemobile.it			Italy
+22234	BT Mobile	internet.btitalia.it			Italy
+22235	Lycamobile	data.lycamobile.it	lmit	plus	Italy
+22250	ILIAD	iliad			Italy
+22288	Wind	internet.wind			Italy
+22288	Wind	internet.wind.biz			Italy
+22288	POSTEMOBILE WEB	wap.postemobile.it			Italy
+22288	TRE	tre.it			Italy
+22298	BLU	INTERNET			Italy
+22299	TRE	tre.it			Italy
+22299	3 Italia	datacard.tre.it			Italy
+22299	Fastweb WEB	apn.fastweb.it			Italy
+22601	Vodafone	live.vodafone.com	live	vodafone	Romania
+22601	Vodafone	internet.vodafone.ro	internet.vodafone.ro	vodafone	Romania
+22601	Vodafone live!PRE	live.pre.vodafone.com	live	vodafone	Romania
+22603	Cosmote	broadband			Romania
+22603	web'n'walk	wnw	wnw	wnw	Romania
+22605	Digi	internet			Romania
+22605	Digi	ppinternet			Romania
+22605	Digi	prepaid			Romania
+22606	Connect Mobile	broadband			Romania
+22606	web'n'walk	wnw	wnw	wnw	Romania
+22610	Orange	net			Romania
+22801	Swisscom	gprs.swisscom.ch	gprs	gprs	Switzerland
+22801	Fastweb	apn.fastweb.it			Switzerland
+22802	Sunrise	internet	internet	internet	Switzerland
+22803	Orange	internet			Switzerland
+22803	Orange	click			Switzerland
+22803	Orange Internet	internet			Switzerland
+22808	Tele2 WAP	internet.tele2.ch			Switzerland
+22853	upcnet	Internet.ch.upcmobile.com			Switzerland
+23001	T-Mobile	internet.t-mobile.cz			Czech Republic
+23002	O2 - CZ	internet			Czech Republic
+23003	Vodafone	internet			Czech Republic
+23003	GPRS Web	ointernet			Czech Republic
+23003	4ka SK	internet			Slovakia
+23101	Orange	internet			Slovakia
+23101	Orange World	orangewap	wap	wap	Slovakia
+23102	Telekom	internet			Slovakia
+23103	4ka	internet			Slovakia
+23103	Swan	internet			Slovakia
+23104	T-Mobile SK	internet			Slovakia
+23105	Orange Internet	internet			Slovakia
+23106	O2 internet	o2internet			Slovakia
+23106	O2 - SK	o2internet			Slovakia
+23201	A1	A1.net	ppp@A1plus.at	ppp	Austria
+23203	T-mobile	internet.t-mobile.at	t-mobile	tm	Austria
+23205	ONE	web.one.at	web	web	Austria
+23207	telering	web	web@telering.at	web	Austria
+23207	0677 web	webaut			Austria
+23210	Three	drei.at			Austria
+23211	Bob	bob.at	data@bob.at	ppp	Austria
+23212	Yesss	web.yesss.at			Austria
+23213	UPC mobile	Internet.at.upcmobile.com			Austria
+23219	Tele2 Web	internet.tele2.at			Austria
+23400	BT Mobile	btmobile.bt.com	bt	bt	UK
+23401	UBIQUISYS	internet			UK
+23402	O2	m-bb.o2.co.uk	o2bb	password	UK
+23402	O2	mobile.o2.co.uk	o2web	password	UK
+23402	Tesco Mobile	prepay.tesco-mobile.com	tescowap	password	UK
+23402	GiffGaff	giffgaff.com	giffgaff	password	UK
+23408	BT Mobile	internet.btonephone.com	bt	bt	UK
+23410	O2	m-bb.o2.co.uk	vertigo	password	UK
+23410	O2	mobile.o2.co.uk	o2web	password	UK
+23410	Tesco Mobile	prepay.tesco-mobile.com	tescowap	password	UK
+23410	GiffGaff	giffgaff.com	giffgaff	password	UK
+23410	TESCO	prepay.tesco-mobile.com	tescowap	password	UK
+23411	O2	m-bb.o2.co.uk	vertigo	password	UK
+23411	O2	mobile.o2.co.uk	o2web	password	UK
+23411	Tesco Mobile	prepay.tesco-mobile.com	tescowap	password	UK
+23411	GiffGaff	giffgaff.com	giffgaff	password	UK
+23415	Vodafone	pp.vodafone.co.uk	web	web	UK
+23415	Vodafone	smart	web	web	UK
+23415	Vodafone UK	wap.vodafone.co.uk	wap	wap	UK
+23415	Vodafone	internet	web	web	UK
+23415	ASDA WAP	asdamobiles.co.uk	wap	wap	UK
+23415	Talkmob PAYG WAP	payg.talkmobile.co.uk	wap	wap	UK
+23415	Talkmob WAP	talkmobile.co.uk	wap	wap	UK
+23415	TalkTalk WAP	mobile.talktalk.co.uk			UK
+23415	Lebara Internet	uk.lebara.mobi	wap	wap	UK
+23420	Three	three.co.uk			UK
+23420	iD	id			UK
+23425	Truphone	truphone.com			UK
+23426	Lycamobile	data.lycamobile.co.uk	lmuk	plus	UK
+23430	EE	everywhere	eesecure	secure	UK
+23430	T-MOBILE	general.t-mobile.uk			UK
+23430	Asda Mobile	asdamobiles.co.uk	web	web	UK
+23430	Virgin Media	goto.virginmobile.uk	user		UK
+23430	BT Mobile	internet.btonephone.com	bt	bt	UK
+23430	BT Mobile	btmobile.bt.com	bt	bt	UK
+23431	Virgin Media	goto.virginmobile.uk	User		UK
+23432	EE Internet	everywhere	eesecure	secure	UK
+23432	Virgin Media	goto.virginmobile.uk	User		UK
+23433	EE Internet	everywhere	eesecure	secure	UK
+23433	Orange	orangeinternet			UK
+23433	Internet	tslpaygnet			UK
+23434	EE Internet	everywhere	eesecure	secure	UK
+23450	JT	pepper			UK
+23455	C&W Guernsey	internet			UK
+23458	3G HSDPA	3gpronto			UK
+23458	Manx Pronto	web.manxpronto.net	gprs	gprs	UK
+23476	BT Mobile	btmobile.bt.com	bt	bt	UK
+23477	BT Mobile	btmobile.bt.com	bt	bt	UK
+23486	EE Internet	everywhere	eesecure	secure	UK
+23491	Vodafone	ppbundle.internet	web	web	UK
+23491	Vodafone	pp.internet	web	web	UK
+23494	3 UK	three.co.uk			UK
+234304	EE	everywhere	eesecure	secure	UK
+23801	TDC	internet			Denmark
+23801	TDC	internet.se			Denmark
+23801	TDC DK	internet			Denmark
+23801	Telmore Internet	internet			Denmark
+23801	TELMORE WAP	wap			Denmark
+23802	Sonofon	internet			Denmark
+23806	3 DK	bredband.tre.dk			Denmark
+23806	Oister DK	data.oister.dk			Denmark
+23820	Telia	www.internet.mtelia.dk			Denmark
+23820	Telia SurfPort	www.internet.mtelia.dk			Denmark
+23820	Call me Internet	webSP			Denmark
+23820	DLG Tele GPRS	webSP			Denmark
+23830	Orange	web.orange.dk			Denmark
+23830	Telia Internet	www.internet.mtelia.dk			Denmark
+23877	Telenor	internet			Denmark
+24001	Telia	online.telia.se			Sweden
+24001	Halebop	halebop.telia.se			Sweden
+24002	Tre	bredband.tre.se			Sweden
+24002	3	data.tre.se			Sweden
+24004	3	data.tre.se			Sweden
+24004	Telenor Mobilsurf	services.telenor.se			Sweden
+24005	Tele2 Internet	4g.tele2.se			Sweden
+24005	Tele2 Internet 3G	internet.tele2.se			Sweden
+24005	Telia	online.telia.se			Sweden
+24005	Halebop Internet	halebop.telia.se			Sweden
+24006	Telenor	internet.telenor.se			Sweden
+24006	Telenor Mobilsurf	services.telenor.se			Sweden
+24007	Tele2	4G.tele2.se			Sweden
+24007	Tele2	internet.tele2.se			Sweden
+24007	Ventelo	internet.ventelo.se			Sweden
+24007	Tele2 Internet	internet.tele2.no	wap	wap	Sweden
+24008	Telenor	internet.telenor.se			Sweden
+24008	Comviq	data.comviq.se			Sweden
+24008	UVTC	sp-services			Sweden
+24008	Hallon	data.tre.se			Sweden
+24008	Cellip	sp-services			Sweden
+24008	Fogg Mobile	internet.foggmobile.com			Sweden
+24008	Glocalnet	internet.glocalnet.se			Sweden
+24008	Telenor Mobilsurf	services.telenor.se			Sweden
+24009	TelenorMobilsurf	services.telenor.se			Sweden
+24010	Spring mobil	data.springmobil.se			Sweden
+24017	Halebop	halebop.telia.se			Sweden
+24024	Tele2	4g.tele2.se			Sweden
+24024	Tele2	internet.tele2.se			Sweden
+24024	Telenor SE	services.telenor.se			Sweden
+24077	Comviq	data.comviq.se			Sweden
+24078	Comviq	data.comviq.se			Sweden
+24201	Telenor	Telenor			Norway
+24201	Ventelo Internett	internet.ventelo.no			Norway
+24202	NetCom	internet.netcom.no			Norway
+24202	NetCom	netcom			Norway
+24203	Teletopia	www.teletopia.no			Norway
+24204	Tele2 Internett	internet.tele2.no			Norway
+24205	Tele2	internet.tele2.no			Norway
+24205	OneCall Internet	internet			Norway
+24403	DNA Internet	internet			Finland
+24404	AINA	internet			Finland
+24405	Elisa	internet			Finland
+24405	Saunalahti	internet.saunalahti			Finland
+24410	TDC	internet			Finland
+24410	TDC	internet.song.fi	song@internet	songnet	Finland
+24411	Vectone	internet			Finland
+24412	DNA	internet			Finland
+24412	DNA	data.dna.fi			Finland
+24413	DNA	internet			Finland
+24414	Alcom	internet			Finland
+24421	Saunalahti	internet.saunalahti			Finland
+24421	Saunalahti	internet			Finland
+24426	Compatel	internet			Finland
+24430	Vectone	internet			Finland
+24431	Ukko	internet			Finland
+24432	Voxbone	internet			Finland
+24491	Sonera	internet			Finland
+24601	Omnitel	gprs.omnitel.net			Lithuania
+24602	Bite	banga			Lithuania
+24603	Tele2 LT	internet.tele2.lt			Lithuania
+24681	Test Internet	VZWINTERNET			Lithuania
+24701	LMT	internet.lmt.lv	lmt	lmt	Latvia
+24702	Tele2 LV	internet.tele2.lv	wap	wap	Latvia
+24705	Bite LV Internet	internet			Latvia
+24705	Bite LV WAP	wap			Latvia
+24801	EMT	internet.emt.ee			Estonia
+24801	EMT WAP	wap.emt.ee			Estonia
+24802	RLE	internet			Estonia
+24802	Elisa WAP	wap			Estonia
+24803	Tele2	internet.tele2.ee	wap	wap	Estonia
+24803	Tele2 Internet	internet.tele2.ee			Estonia
+25001	MTS	internet.mts.ru	mts	mts	Russia
+25002	MegaFon	internet	gdata	gdata	Russia
+25004	MTC	internet.mts.ru	mts	mts	Russia
+25005	MTC	internet.mts.ru	mts	mts	Russia
+25007	Smarts	internet.smarts.ru			Russia
+25010	MTC	internet.mts.ru	mts	mts	Russia
+25011	Yota	yota.ru			Russia
+25012	GPRS-Internet	inet.bwc.ru	bwc	bwc	Russia
+25013	MTC	internet.mts.ru	mts	mts	Russia
+25017	Internet	internet.usi.ru			Russia
+25020	TELE2	internet.tele2.ru			Russia
+25020	TELE2 Wap	wap.tele2.ru			Russia
+25028	Beeline	home.beeline.ru	beeline	beeline	Russia
+25035	MOTIV	inet.ycc.ru	motiv	motiv	Russia
+25039	Rostelekom	internet.rt.ru			Russia
+25039	Vainah telecom	internet			Russia
+25039	MTC	internet.mts.ru	mts	mts	Russia
+25044	Beeline internet	internet.beeline.ru	beeline	beeline	Russia
+25092	Primtel	internet.primtel.ru			Russia
+25092	MTC	internet.mts.ru	mts	mts	Russia
+25093	MTC	internet.mts.ru	mts	mts	Russia
+25099	Beeline	internet.beeline.ru	beeline	beeline	Russia
+25501	UMC	www.umc.ua			Ukraine
+25501	Vodaphone	internet			Ukraine
+25501	MTS-internet	internet			Ukraine
+25501	MTS-internet	www.mts.com.ua			Ukraine
+25502	Beeline-internet	internet.beeline.ua			Ukraine
+25503	Kyivstar	www.kyivstar.net			Ukraine
+25503	Djuice Internet	www.djuice.com.ua			Ukraine
+25506	Life	internet.life.com.by			Ukraine
+25506	Lifecell	internet			Ukraine
+25507	3Mob	3g.utel.ua			Ukraine
+25701	Velcom	web.velcom.by	web	web	Belarus
+25702	MTS BY	internet.mts.by	mts	mts	Belarus
+25704	BeST BY	internet.life.com.by			Belarus
+25901	Orange Moldova	internet			Moldova
+25902	Moldcell	internet			Moldova
+25903	IDC	internet.lte.idknet.com			Moldova
+25904	Eventis WAP	internet.md			Moldova
+25905	Unite	internet3g.unite.md			Moldova
+25905	Unite	internet.unite.md			Moldova
+25915	IDC	internet.lte.idknet.com			Russia
+26001	Plus	internet			Poland
+26002	T-Mobile	internet			Poland
+26002	ERA Internet	erainternet	erainternet	erainternet	Poland
+26002	heyahinternet	heyah.pl			Poland
+26003	Orange	internet	internet	internet	Poland
+26003	Orange	internetipv6			Poland
+26006	PLAY	internet			Poland
+26012	Cyfrowy Polsat	internet.cp			Poland
+26017	Aero2	darmowy			Poland
+26033	Truphone	truphone.com			Poland
+26098	PLAY	internet			Poland
+26201	T-Mobile	internet.telekom	t-mobile	tm	Germany
+26201	telekom	internet.t-mobile	t-mobile	tm	Germany
+26201	DT	internet.home	t-mobile	tm	Germany
+26202	Vodafone	web.vodafone.de			Germany
+26202	Klarmobil	internet.t-mobile	t-mobile	tm	Germany
+26202	Klarmobil	web.vodafone.de			Germany
+26202	Otelo	data.otelo.de			Germany
+26203	E-Plus	internet.eplus.de	eplus	eplus	Germany
+26203	Aldi Talk	internet.eplus.de	eplus	internet	Germany
+26203	Aldi Talk	tagesflat.eplus.de	eplus	internet	Germany
+26203	simyo	internet.eplus.de	simyo	simyo	Germany
+26203	Base	internet.eplus.de	eplus	internet	Germany
+26203	blau	internet.eplus.de	blau	blau	Germany
+26203	Simyo	internet.eplus.de	simyo	simyo	Germany
+26203	O.tel.o	event.otelo.de			Germany
+26204	Vodafone DE	web.vodafone.de			Germany
+26205	E-Plus	internet.eplus.de	eplus	internet	Germany
+26206	T-Mobile	internet.t-mobile	t-mobile	tm	Germany
+26207	O2	internet			Germany
+26207	O2	pinternet.interkom.de			Germany
+26207	Tchibo	webmobil1			Germany
+26207	Tchibo	surfmobil2			Germany
+26207	Lidl	pinternet.interkom.de			Germany
+26207	Fonic	pinternet.interkom.de			Germany
+26207	Lidl	web.vodafone.de			Germany
+26208	O2	internet			Germany
+26209	Vodafone	web.vodafone.de			Germany
+26211	o2	internet			Germany
+26242	Truphone	truphone.com			Germany
+26801	Vodafone	internet.vodafone.pt	vodafone	vodafone	Portugal
+26803	PortalOptimus	umts			Portugal
+26806	MEO	internet			Portugal
+27001	LUXGSM	web.pt.lu			Luxembourg
+27077	Tango	internet			Luxembourg
+27099	Orange	orange.lu			Luxembourg
+27201	Vodafone	isp.vodafone.ie	vodafone	vodafone	Ireland
+27202	O2 IE	internet	user	user123	Ireland
+27203	Meteor	isp.mymeteor.ie	my	meteor	Ireland
+27203	eMobile WAP	mms.eircom.ie			Ireland
+27205	Three	3ireland.ie			Ireland
+27207	Eircom	data.eircom.ie	blank	blank	Ireland
+27211	Tesco Mobile	Tescomobile.liffeytelecom.com			Ireland
+27213	Lyca Mobile	data.lycamobile.com	lmus	plus	Ireland
+27401	Siminn	internet			Iceland
+27402	Vodafone Internet	gprs.is			Iceland
+27403	Vodafone Internet	gprs.is			Iceland
+27411	Net Nova	net.nova.is			Iceland
+27801	Vodafone MT	internet	internet	internet	Malta
+27821	GO Surfing	gosurfingun			Malta
+28001	CYTA	cytamobile	user	pass	Cyprus
+28010	MTN Wap	wap	wap	wap	Cyprus
+28201	Geocell	internet			Georgia
+28202	Magticom	3g.ge			Georgia
+28204	Beeline	internet			Georgia
+28301	Beeline	internet.beeline.am	internet	internet	Armenia
+28305	VivacellMts	connect.vivacell.am			Armenia
+28310	Orange	internet			Armenia
+28401	M-TEL	inet-gprs.mtel.bg	mtel	mtel	Bulgaria
+28401	M-TEL	wap-gprs.mtel.bg			Bulgaria
+28403	Vivacom	internet.vivacom.bg	vivacom	vivacom	Bulgaria
+28405	Globul	internet.globul.bg	globul		Bulgaria
+28405	Telenor	telenorbg			Bulgaria
+28411	Bulsatcom	bulsat.com			Bulgaria
+28413	Max Telecom	apn.maxtelecom.bg			Bulgaria
+28601	Turkcell	internet			Turkey
+28602	Vodafone	internet	vodafone	vodafone	Turkey
+28603	Avea	internet			Turkey
+29340	SImobil	internet.simobil.si	simobil	internet	Slovenia
+29341	Mobitel	internet	mobitel	internet	Slovenia
+29370	Telemach	telemach.net			Slovenia
+29401	Mobimak	internet	internet	mobimak	Macedonia
+29402	ONE Internet	internet			Macedonia
+29505	FL1	mobilkom.li	ppp@A1plus.at		Liechtenstein
+29701	Telenor MNE	flat	gprs	gprs	Montenegro
+29702	T-Mobile CG	tmcg-wnw	38267	38267	Montenegro
+30237	Fido	internet.fido.ca			Canada
+302220	TELUS SP	sp.telus.com			Canada
+302220	Koodo SP	sp.koodo.com			Canada
+302221	TELUS SP	sp.telus.com			Canada
+302221	Koodo	sp.koodo.com			Canada
+302221	PC mobile	sp.mb.com			Canada
+302270	Internet	wisp.mobi.eastlink.ca			Canada
+302320	MOWAP	wap.davewireless.com			Canada
+302660	MTS	sp.mts			Canada
+302370	Fido	internet.fido.ca			Canada
+302720	Rogers	internet.com	wapuser1	wap	Canada
+302370	Fido	fido-core-appl1.apn			Canada
+302720	Rogers	internet.com	guest	guest	Canada
+302720	Rogers	rogers-core-appl1.apn			Canada
+302720	Ztar Internet	rogers-core-appl1.apn			Canada
+302780	SaskTel	pda.stm.sk.ca			Canada
+31000	Bluewire	VZWINTERNET			USA
+31000	Flatwire	VZWINTERNET			USA
+31000	Mobipcs	VZWINTERNET			USA
+31000	Mobilenation	VZWINTERNET			USA
+31000	Mohave	VZWINTERNET			USA
+31000	Peopleswire	VZWINTERNET			USA
+31000	Revol	VZWINTERNET			USA
+31000	Distribution	VZWINTERNET			USA
+31004	Verizon	internet			USA
+31004	Verizon	VZWINTERNET			USA
+31016	T-Mobile	internet2.voicestream.com			USA
+31020	Union Wireless	union.wap.com			USA
+31021	T-Mobile	internet2.voicestream.com			USA
+31022	T-Mobile	internet2.voicestream.com			USA
+31023	T-Mobile	internet2.voicestream.com			USA
+31024	T-Mobile	internet2.voicestream.com			USA
+31025	T-Mobile	internet2.voicestream.com			USA
+31026	T-Mobile	internet2.voicestream.com			USA
+31027	T-Mobile	internet2.voicestream.com			USA
+31028	ALU Test-SIM	VZWINTERNET			USA
+31030	Centennial	private.centennialwireless.com	privuser	priv	USA
+31030	Truphone	truphone.com			USA
+31031	T-Mobile	internet2.voicestream.com			USA
+31030	Internet	private.centennialwireless.com	privuser	priv	USA
+31032	Itewire	VZWINTERNET			USA
+31035	Etex	VZWINTERNET			USA
+31040	Mta	VZWINTERNET			USA
+31050	Alaskacomm	VZWINTERNET			USA
+31070	ATT Nextgenphone	nxtgenphone			USA
+31090	Internet	isp			USA
+31090	ATT Nextgenphone	nxtgenphone			USA
+310100	PLATWEB	plateauweb			USA
+310120	Sprint	sprint			USA
+310120	SPCS Global	cinet.spcs			USA
+310130	Carolina west	VZWINTERNET			USA
+310150	Cingular	ISP.CINGULAR	ISP@CINGULARGPRS.COM	CINGULAR1	USA
+310150	ATT Nextgenphone	nxtgenphone			USA
+310150	internet	ndo			USA
+310160	T-Mobile	internet2.voicestream.com			USA
+310160	T-Mobile	fast.t-mobile.com			USA
+310160	MetroPCS 160	fast.metropcs.com			USA
+310170	Cingular	ISP.CINGULAR	ISP@CINGULARGPRS.COM	CINGULAR1	USA
+310170	DataConnect	isp.cingular			USA
+310170	ATT	nxtgenphone			USA
+310180	WCW-INTERNET	internet.wcc.net	13257630000	mmsc	USA
+310200	T-Mobile	fast.t-mobile.com			USA
+310200	MetroPCS 200	fast.metropcs.com			USA
+310210	T-Mobile	internet2.voicestream.com			USA
+310210	MetroPCS 210	fast.metropcs.com			USA
+310220	T-Mobile	fast.t-mobile.com			USA
+310220	MetroPCS 220	fast.metropcs.com			USA
+310230	T-Mobile	fast.t-mobile.com			USA
+310230	MetroPCS 230	fast.metropcs.com			USA
+310240	T-Mobile	fast.t-mobile.com			USA
+310240	MetroPCS 240	fast.metropcs.com			USA
+310250	T-Mobile	fast.t-mobile.com			USA
+310250	MetroPCS 250	fast.metropcs.com			USA
+310260	T-Mobile	fast.t-mobile.com			USA
+310260	MetroPCS 260	fast.metropcs.com			USA
+310260	SIMPLE	simple			USA
+310260	TFWAP	wap.tracfone			USA
+310260	Consumer Cellular	wholesale			USA
+310270	T-Mobile	fast.t-mobile.com			USA
+310270	MetroPCS 270	fast.metropcs.com			USA
+310280	T-Mobile	internet2.voicestream.com			USA
+310280	agms	agms			USA
+310290	T-Mobile	internet2.voicestream.com			USA
+310300	T-Mobile	fast.t-mobile.com			USA
+310300	MetroPCS 300	fast.metropcs.com			USA
+310310	T-Mobile	tmobile.internet			USA
+310310	MetroPCS 310	fast.metropcs.com			USA
+310320	T-Mobile	internet2.voicestream.com			USA
+310320	Cellular	isp.cellularoneaz.net			USA
+310330	Alltel2	VZWINTERNET			USA
+310360	Pioneer	VZWINTERNET			USA
+310380	Cingular	ISP.CINGULAR	ISP@CINGULARGPRS.COM	CINGULAR1	USA
+310380	ATT	nxtgenphone			USA
+310410	Cingular	ISP.CINGULAR	ISP@CINGULARGPRS.COM	CINGULAR1	USA
+310410	ATT Nextgenphone	nxtgenphone			USA
+310410	ATT Phone	phone			USA
+310410	ATT WAP	wap.cingular			USA
+310410	Defense Mobile	PRODATA			USA
+310410	TFDATA	tfdata			USA
+310410	ATT Broadband	Broadband			USA
+310420	CBW	web.gocbw.com	cbw		USA
+310430	Gci	VZWINTERNET			USA
+310450	Viaero Connect	internet.vedge.com			USA
+310470	DataConnect	isp.cingular			USA
+310470	MediaNet	wap.cingular	WAP@CINGULARGPRS.COM	CINGULAR1	USA
+310470	nTelos Wireless	internet.4g.ntelos.com			USA
+310480	DataConnect	isp.cingular			USA
+310480	MediaNet	wap.cingular	WAP@CINGULARGPRS.COM	CINGULAR1	USA
+310490	T-Mobile US 490	fast.t-mobile.com			USA
+310490	MetroPCS 490	fast.metropcs.com			USA
+310530	T-Mobile US 530	fast.t-mobile.com			USA
+310530	MetroPCS 530	fast.metropcs.com			USA
+310560	ATT Nextgenphone	nxtgenphone			USA
+310570	Cellular One	internet			USA
+310580	T-Mobile US 580	fast.t-mobile.com			USA
+310580	MetroPCS 580	fast.metropcs.com			USA
+310580	Inland	VZWINTERNET			USA
+310590	T-Mobile US 590	fast.t-mobile.com			USA
+310590	MetroPCS 590	fast.metropcs.com			USA
+310600	Cellcom	VZWINTERNET			USA
+310610	EpicINT	internet.epictouch			USA
+310640	T-Mobile US 640	fast.t-mobile.com			USA
+310640	MetroPCS 640	fast.metropcs.com			USA
+310660	T-Mobile	fast.t-mobile.com			USA
+310660	MetroPCS 660	fast.metropcs.com			USA
+310680	ATT Nextgenphone	nxtgenphone			USA
+310720	Rogers Internet	internet.com			USA
+310750	Appalachian	VZWINTERNET			USA
+310770	WEB 2	i2.iwireless.com			USA
+310770	Web 1	wap1.iwireless.com			USA
+310800	T-Mobile	fast.t-mobile.com			USA
+310800	MetroPCS 800	fast.metropcs.com			USA
+310820	Nepa	VZWINTERNET			USA
+310840	Internet	isp			USA
+310880	DTC dtcwap	wapdtcw.com			USA
+310900	Midrivers	VZWINTERNET			USA
+310910	WOW_WAP	wap.firstcellular.com			USA
+310980	Cingular	ISP.CINGULAR	ISP@CINGULARGPRS.COM	CINGULAR1	USA
+31130	Indigo	internet.indigo	user1@indigo.internet	indigo	USA
+311180	ATT Nextgenphone	nxtgenphone			USA
+311210	Farmers GPRS	internet.farmerswireless.com			USA
+311220	U.S. Cellular	usccinternet			USA
+311221	U.S. Cellular	usccinternet			USA
+311222	U.S. Cellular	usccinternet			USA
+311223	U.S. Cellular	usccinternet			USA
+311224	U.S. Cellular	usccinternet			USA
+311225	U.S. Cellular	usccinternet			USA
+311226	U.S. Cellular	usccinternet			USA
+311227	U.S. Cellular	usccinternet			USA
+311228	U.S. Cellular	usccinternet			USA
+311229	U.S. Cellular	usccinternet			USA
+311230	CSpire internet	internet.cs4glte.com			USA
+311310	Leaco	VZWINTERNET			USA
+311340	Illinois valley	VZWINTERNET			USA
+311350	Nemont	VZWINTERNET			USA
+311360	Stelera	isp.stelera.net			USA
+311370	GCI WEB	web.gci			USA
+311370	ACS WEB	web.acs			USA
+311390	Ericsson Test	VZWINTERNET			USA
+311410	Chatmobrsa2	VZWINTERNET			USA
+311420	Northwestcell	VZWINTERNET			USA
+311430	Chatmobrsa1	VZWINTERNET			USA
+311440	Bluegrass	VZWINTERNET			USA
+311450	Ptci	VZWINTERNET			USA
+311480	Verizon	internet			USA
+311480	Verizon	VZWINTERNET			USA
+311490	Sprint	cinet.spcs	none	none	USA
+311500	Mosaic WAP	wap			USA
+311500	Mosaic WAP AT&T	wap			USA
+311500	Mosaic	wap			USA
+311500	Norvado	wap			USA
+311500	Norvado AT&T	wap			USA
+311500	Norvado T-Mobile	wap			USA
+311530	Blaze	mms.mymobiletxt.com			USA
+311530	Duet Internet	wap.mymobiletxt.com			USA
+311580	U.S. Cellular	usccinternet			USA
+311581	U.S. Cellular	usccinternet			USA
+311582	U.S. Cellular	usccinternet			USA
+311583	U.S. Cellular	usccinternet			USA
+311584	U.S. Cellular	usccinternet			USA
+311585	U.S. Cellular	usccinternet			USA
+311586	U.S. Cellular	usccinternet			USA
+311587	U.S. Cellular	usccinternet			USA
+311588	U.S. Cellular	usccinternet			USA
+311589	U.S. Cellular	usccinternet			USA
+311590	Gsc	VZWINTERNET			USA
+311600	Cox	VZWINTERNET			USA
+311610	Srtcomm	VZWINTERNET			USA
+311650	Unitedwireless	VZWINTERNET			USA
+311670	Pinebelt	VZWINTERNET			USA
+311740	TelAlaska Cellular	akcell.mobi			USA
+311870	Sprint	cinet.spcs	none	none	USA
+311910	MobileNation	mymn4g.net			USA
+311920	Chariton valley	VZWINTERNET			USA
+311930	Syringa Wireless	internet.syringawireless.com			USA
+31240	Custer	VZWINTERNET			USA
+312160	chatmobility	VZWINTERNET			USA
+312420	NexTech Wireless	internet.lte.ntwls.com			USA
+312530	Sprint	cinet.spcs	none	none	USA
+312570	Blue Wireless	Blue Hotspot	%M@dun.bluehandset.com	wirelessblue	USA
+31610	Sprint APN	cinet.spcs	none	none	USA
+33000	Openmobile	VZWINTERNET			Puerto Rico
+33402	Telcel Internet	internet.itelcel.com	webgprs	webgprs2002	Mexico
+33403	MoviStar Internet	internet.movistar.mx	movistar	movistar	Mexico
+33420	Telcel	internet.itelcel.com	webgprs	webgprs	Mexico
+33430	Movistar	internet.movistar.mx	movistar	movistar	Mexico
+33450	Internet MODEM	modem.iusacellgsm.mx	iusacellgsm	iusacellgsm	Mexico
+33490	Localizacion	location.nexteldata.com.mx			Mexico
+33490	Navegación	wap.nexteldata.com.mx			Mexico
+33805	Digicel	web.digiceljamaica.com	wapuser	wap03jam	Jamaica
+33818	Lime Internet	internet			Jamaica
+33818	Lime Internet	ppinternet			Jamaica
+33850	INTERNET Digicel	web			Jamaica
+33870	Claro Web	internet.ideasclaro.com.jm			Jamaica
+338180	C&W	internet			Jamaica
+338180	Lime Internet	ppinternet			Jamaica
+34001	Orange	orangewap			Guadeloupe
+34020	Digicel Web	web.digicelfr.com			Guadeloupe
+34260	Lime Internet	internet			Barbados
+342600	Barbado Lime	internet			Barbados
+34492	Lime Internet	internet			AG
+344920	Antigua Lime	internet			AG
+34614	Lime Internet	internet			Barbados
+346140	Lime	internet			Barbados
+34712	TSTT	internet			Trinidad and Tobago
+34817	Lime	internet			Virgin Islands, U.S.
+34877	Digicel	wap.digicelbvi.com			Virgin Islands, U.S.
+348170	Lime	internet			Virgin Islands, U.S.
+35211	Lime	internet			Grenada
+352110	Lime	internet			Grenada
+35486	Lime	internet			Montserrat
+354860	Lime	internet			Montserrat
+35611	Lime	internet			Saint Kitts and Nevis
+356110	Lime	internet			Saint Kitts and Nevis
+35811	Lime	internet			Saint Lucia
+36011	Lime	internet			Saint Vincent and the Grenadines
+36269	Digicel	web.digicelcuracao.com			CURACAO
+36291	CHIPPIE	utsnet.uts.an	netuser	net123	CURACAO
+36301	Setar	internet.setar.aw			Aruba
+36302	INTERNET Aruba	web.digicelaruba.com			Aruba
+36320	INTERNET Aruba	web.digicelaruba.com			Aruba
+36584	Lime	internet			Anguilla
+365840	Lime	internet			Anguilla
+36611	Lime	internet			Dominica
+366110	Lime	internet			Dominica
+36801	Internet	internet			Cuba
+37002	CLARO WEB	internet.ideasclaro.com.jm			Dominican Republic
+37020	CLARO WEB	internet.ideasclaro.com.jm			Dominican Republic
+37020	Movil	internet.ideasclaro.com.do			Dominican Republic
+37004	Viva Edge	edge.viva.net.do	viva	viva	Dominican Republic
+37202	Digicel	wap.digicelha.com			Haiti
+37412	Bmobile internet	internet			Trinidad and Tobago
+374120	Bmobile internet	internet			Trinidad and Tobago
+374121	Bmobile internet	internet			Trinidad and Tobago
+374122	Bmobile internet	internet			Trinidad and Tobago
+374123	Bmobile internet	internet			Trinidad and Tobago
+374124	Bmobile internet	internet			Trinidad and Tobago
+374125	Bmobile internet	internet			Trinidad and Tobago
+374126	Bmobile internet	internet			Trinidad and Tobago
+374127	Bmobile internet	internet			Trinidad and Tobago
+374128	Bmobile internet	internet			Trinidad and Tobago
+374129	Bmobile internet	internet			Trinidad and Tobago
+37413	INTERNET Trinidad	web.digiceltt.com			Trinidad and Tobago
+374130	INTERNET Trinidad	web.digiceltt.com			Trinidad and Tobago
+37635	Lime	internet			Turks and Caicos Islands
+376350	Lime	internet			Turks and Caicos Islands
+40001	Azercell	default			Azerbaijan
+40002	Bakcell	default			Azerbaijan
+40003	FONEX	default			Azerbaijan
+40004	Nar Mobile	default			Azerbaijan
+40101	Beeline	internet.beeline.kz	@internet.beeline	beeline	Kazakhstan
+40101	DOS Internet	internet.dos.kz			Kazakhstan
+40102	Kcell	internet			Kazakhstan
+40107	Altel	internet			Kazakhstan
+40177	Tele2	internet			Kazakhstan
+40211	B-Mobile	default			Bhutan
+40277	TashiCell	default			Bhutan
+40400	TATA Indicom	internet	wapuser	wapuser	India
+40400	RCOM CDMA	#777	net	net	India
+40401	Vodafone	www			India
+40402	Airtel	airtelgprs.com			India
+40403	Airtel	airtelgprs.com			India
+40404	Idea	internet			India
+40405	Hutch	www			India
+40406	Airtel Live!	airtelgprs.com			India
+40407	Idea	internet			India
+40409	Reliance	rcomnet			India
+40410	Airtel	airtelgprs.com			India
+40411	Vodafone	www			India
+40412	Idea	internet			India
+40413	Hutch	www			India
+40414	SpicePunjab	spicegprs			India
+40414	Idea	internet			India
+40415	Vodafone	www			India
+40416	Airtel	airtelgprs.com			India
+40417	Aircel	aircelgprs.com			India
+40417	Aircel-GPRS	aircelweb			India
+40417	Aircel Internet	aircelgprs			India
+40418	Reliance	rcomnet			India
+40418	Reliance RTel	SMARTNET			India
+40418	Reliance WAP	smartwap			India
+40419	Idea	internet			India
+40420	Orange IN	www			India
+40420	Vodafone	www			India
+40421	BPL	bplgprs.com			India
+40421	Loop Mobile	www			India
+40422	Idea	internet			India
+40424	Idea	internet			India
+40425	Aircel	aircelgprs.com			India
+40425	Aircel	aircelweb			India
+40425	Aircel	aircelgprs			India
+40427	BPL	bplgprs.com			India
+40427	Vodafone	www			India
+40428	Aircel	aircelgprs.com			India
+40428	AIRCEL NE	aircelwebpost			India
+40428	Aircel-GPRS	aircelweb			India
+40429	Aircel	aircelgprs.com			India
+40429	AIRCEL NE	aircelwebpost			India
+40429	Pocket Internet	myaircelpost			India
+40429	Pocket Internet	myaircel			India
+40429	Aircel-GPRS	aircelweb			India
+40430	Vodafone	www			India
+40431	Airtel	airtelgprs.com			India
+40433	Aircel	aircelgprs.com			India
+40433	Pocket Internet	myaircelpost			India
+40433	Pocket Internet	myaircel			India
+40433	Aircel-GPRS	aircelweb			India
+40434	BSNL	bsnlnet			India
+40435	Aircel	aircelgprs.com			India
+40435	AIRCEL NE	aircelwebpost			India
+40435	Aircel-GPRS	aircelweb			India
+40436	Reliance	rcomnet			India
+40436	Reliance RTel	SMARTNET			India
+40437	Aircel	aircelgprs.com			India
+40437	Aircel-GPRS	aircelwebpost			India
+40437	Aircel-GPRS	aircelweb			India
+40437	AIRCEL NE	aircelwebpost			India
+40438	BSNL	bsnlnet			India
+40440	Airtel	airtelgprs.com			India
+40440	AIRTEL LIVE	airtelfun.com			India
+40441	Aircel	aircelgprs.com			India
+40441	AIRCEL TN	aircelgprs.po			India
+40441	Aircel-GPRS	aircelgprs.pr			India
+40441	Aircel Internet	aircelgprs			India
+40442	Aircel	aircelgprs.com			India
+40442	AIRCEL TN	aircelgprs.po			India
+40442	Aircel-GPRS	aircelgprs.pr			India
+40442	Aircel Internet	aircelgprs			India
+40443	Vodafone	www			India
+40444	Idea	internet			India
+40444	IDEA Karnataka	simplyinternet			India
+40445	Airtel	airtelgprs.com			India
+40445	AIRTEL LIVE	airtelfun.com			India
+40446	Vodafone	www			India
+40449	Airtel	airtelgprs.com			India
+40450	Reliance	smartnet			India
+40451	BSNL	bsnlnet			India
+40452	Reliance	smartnet			India
+40453	BSNL	bsnlnet			India
+40454	BSNL	bsnlnet			India
+40455	BSNL	bsnlnet			India
+40456	Idea	internet			India
+40457	BSNL	bsnlnet			India
+40458	BSNL	bsnlnet			India
+40459	BSNL	bsnlnet			India
+40460	Vodafone	www			India
+40462	BSNL	bsnlnet			India
+40464	BSNL	bsnlnet			India
+40466	BSNL	bsnlnet			India
+40466	Vodafone	www			India
+40467	Vodafone	www			India
+40467	Reliance	rcomnet			India
+40467	Reliance RTel	SMARTNET			India
+40468	MTNL	mtnl.net			India
+40468	Dolphin	mtnl3g	mtnl	mtnl123	India
+40469	MTNL	mtnl.net			India
+40469	Dolphin	mtnl.net			India
+40470	Airtel	airtelgprs.com			India
+40471	BSNL	bsnlnet			India
+40472	BSNL	bsnlnet			India
+40473	BSNL	bsnlnet			India
+40474	BSNL	bsnlnet			India
+40475	BSNL	bsnlnet			India
+40476	BSNL	bsnlnet			India
+40477	BSNL	bsnlnet			India
+40478	Idea	internet			India
+40479	BSNL	bsnlnet			India
+40480	BSNL	bsnlnet			India
+40481	BSNL	bsnlnet			India
+40482	Idea	internet			India
+40483	Reliance	smartnet			India
+40484	Vodafone	www			India
+40485	Reliance	smartnet			India
+40486	Hutch	www			India
+40486	Vodafone	www			India
+40487	Idea	internet			India
+40488	Vodafone	www			India
+40489	Idea	internet			India
+40490	Airtel	airtelgprs.com			India
+40491	Aircel	aircelgprs.com			India
+40492	Airtel	airtelgprs.com			India
+40493	Airtel	airtelgprs.com			India
+40494	Airtel	airtelgprs.com			India
+40495	Airtel	airtelgprs.com			India
+40496	Airtel	airtelgprs.com			India
+40497	Airtel	airtelgprs.com			India
+40498	Airtel	airtelgprs.com			India
+404750	Vodafone	www			India
+404751	Vodafone	www			India
+404752	Vodafone	www			India
+404753	Vodafone	www			India
+404754	Vodafone	www			India
+404755	Vodafone	www			India
+404756	Vodafone	www			India
+40501	Reliance	rcomnet			India
+40503	Reliance	rcomnet			India
+40504	Reliance	rcomnet			India
+40505	Reliance	rcomnet			India
+40506	Reliance	rcomnet			India
+40507	Reliance	rcomnet			India
+40508	Reliance	rcomnet			India
+40509	Reliance	rcomnet			India
+40510	Reliance	rcomnet			India
+40511	Reliance	rcomnet			India
+40512	Reliance	rcomnet			India
+40513	Reliance	rcomnet			India
+40514	Reliance	rcomnet			India
+40515	Reliance	rcomnet			India
+40517	Reliance	rcomnet			India
+40518	Reliance	smartnet			India
+40519	Reliance	rcomnet			India
+40520	Reliance	rcomnet			India
+40521	Reliance	rcomnet			India
+40522	Reliance	rcomnet			India
+40523	Reliance	smartnet			India
+40525	TATA Tele	tatadocomo3g			India
+40526	TATA Tele	tatadocomo3g			India
+40527	TATA Tele	tatadocomo3g			India
+40528	TATA Tele	tatadocomo3g			India
+40529	TATA Tele	tatadocomo3g			India
+40530	TATA Tele	tatadocomo3g			India
+40531	TATA Tele	tatadocomo3g			India
+40532	TATA Tele	tatadocomo3g			India
+40533	TATA Tele	tatadocomo3g			India
+40534	TATA Tele	tatadocomo3g			India
+40535	TATA Tele	tatadocomo3g			India
+40536	TATA Tele	tatadocomo3g			India
+40537	TATA Tele	tatadocomo3g			India
+40538	TATA Tele	tatadocomo3g			India
+40539	TATA Tele	tatadocomo3g			India
+40540	TATA Tele	tatadocomo3g			India
+40541	TATA Tele	tatadocomo3g			India
+40542	TATA Tele	tatadocomo3g			India
+40543	TATA Tele	tatadocomo3g			India
+40544	TATA Tele	tatadocomo3g			India
+40545	TATA Tele	tatadocomo3g			India
+40546	TATA Tele	tatadocomo3g			India
+40547	TATA Tele	tatadocomo3g			India
+40551	Airtel	airtelgprs.com			India
+40552	Airtel	airtelgprs.com			India
+40553	Airtel	airtelgprs.com			India
+40554	Airtel	airtelgprs.com			India
+40555	Airtel	airtelgprs.com			India
+40556	Airtel	airtelgprs.com			India
+40570	Idea	internet			India
+405799	Idea	internet			India
+405800	Aircel	aircelgprs.com			India
+405801	Aircel	aircelgprs.com			India
+405802	Aircel	aircelgprs.com			India
+405803	Aircel	aircelgprs.com			India
+405804	Aircel	aircelgprs.com			India
+405805	Aircel	aircelgprs.com			India
+405806	Aircel	aircelgprs.com			India
+405807	Aircel	aircelgprs.com			India
+405808	Aircel	aircelgprs.com			India
+405809	Aircel	aircelgprs.com			India
+405810	Aircel	aircelgprs.com			India
+405811	Aircel	aircelgprs.com			India
+405812	Aircel	aircelgprs.com			India
+405813	Telenor	uninor			India
+405840	Reliance Jio	jionet			India
+405845	Idea	internet			India
+405846	Idea	internet			India
+405847	Idea	internet			India
+405848	Idea	internet			India
+405849	Idea	internet			India
+405850	Idea	internet			India
+405851	Idea	internet			India
+41001	Mobilink	jazzconnect.mobilinkworld.com			Pakistan
+41003	PK-Ufone	ufone.internet			Pakistan
+41003	PK-Ufone	ufone.pinternet			Pakistan
+41004	Zone	zonginternet			Pakistan
+41006	Telenor	internet	Telenor	Telenor	Pakistan
+41007	Warid	warid			Pakistan
+410310	Cellular	att.mvno			Pakistan
+41201	AWCC	default			Afghanistan
+41220	Roshan	default			Afghanistan
+41240	MTN	default			Afghanistan
+41250	Etisalat	default			Afghanistan
+41301	Mobiltel	mobitel3g			Sri Lanka
+41302	Dialog	www.dialogsl.com			Sri Lanka
+41303	Etisalat	internet			=Sri Lanka
+41305	Airtel LK	airtellive			Sri Lanka
+41401	MPT	mptnet	mptnet	12345	Myanmar
+41406	Telenor	internet			Myanmar
+41501	Alfa	internet.mic1.com.lb	mic1	mic1	Lebanon
+41501	Alfa	alfa			Lebanon
+41503	MTC Touch	gprs.mtctouch.com.lb	guest	guest	Lebanon
+41503	Touch	touch			Lebanon
+41601	Zain	zain			Jordan
+41603	Umniah	umniah			Jordan
+41603	Umniah	net			Jordan
+41677	Orange	net.orange.jo	net	net	Jordan
+41805	Asianet	net.asiacell.com			Iraq
+41808	SanaTel	default			Iraq
+41820	ZAIN-GPRS	internet			Iraq
+41830	Zain IQ	internet			Iraq
+41840	Korek	internet.korek.com			Iraq
+41840	Korek	net.korek.com	korek	korek	Iraq
+41845	Mobitel	default			Iraq
+41862	Itisaluna	default			Iraq
+41892	Omnnea	default			Iraq
+41902	MI	pps	pps	pps	Kuwait
+41903	Wataniya	action.wataniya.com			Kuwait
+41904	Viva KW	viva			Kuwait
+42001	STC	jawalnet.com.sa			KSA
+42003	Mobily WEB	web1			KSA
+42003	Mobily	Web2			KSA
+42004	Zain	zain			KSA
+42007	Zain	zain			KSA
+42101	SabaFon	default			Yemen
+42102	MTN	default			Yemen
+42103	Yemen Mobile	default			Yemen
+42104	HiTS-UNITEL	default			Yemen
+42202	Oman Mobile	wap	wap	wap	Oman
+42202	Oman Mobile	taif	taif	taif	Oman
+42203	Nawras	nawras			Oman
+42401	Etisalat	etisalat.ae			UAE
+42402	Etisalat	etisalat.ae			UAE
+42403	Du	du	du	du	UAE
+42501	Partner	uinternet			Israel
+42502	Cellcom	internetg			Israel
+42503	Pelephone	internet.pelephone.net.il	pcl@3g	pcl	Israel
+42503	Rami Levy	internet.rl	rl@3g	rl	Israel
+42505	Jawwal	WAP			Israel
+42506	Wataniya Mobile	internet			Israel
+42507	Hot Mobile	net.hotm			Israel
+42508	Golan Telecom	internet.golantelecom.net.il			Israel
+42510	3G Portal	uwap.orange.co.il			Israel
+42514	YouPhone	data.youphone.co.il			Israel
+42515	Home Cellular	hcminternet			Israel
+42516	Rami Levy	internet.rl	rl@3g	rl	Israel
+42601	Batelco	internet.batelco.com			Bahrain
+42602	Zain BH	internet	internet	internet	Bahrain
+42604	Viva BH	viva.bh			Bahrain
+42701	Ooredoo Qa	data			Qatar
+42702	Vodafone Qatar	web.vodafone.com.qa			Qatar
+42888	Unitel	default			Mongolia
+42891	Skytel	default			Mongolia
+42898	G.Mobile	default			Mongolia
+42899	MobiCom	default			Mongolia
+42901	Namaste	default			Nepal
+42902	Ncell	default			Nepal
+42903	Sky/C-Phone	default			Nepal
+42904	SmartCell	default			Nepal
+43208	Shatel Mobile	shatelmobile			IRAN
+43211	MCI	mcinet			IRAN
+43212	Hiweb	hiweb			IRAN
+43213	Hiweb	hiweb			IRAN
+43214	MCI-GPRS	mcinet			IRAN
+43219	MCI-GPRS	mcinet			IRAN
+43220	RighTel	rightel			IRAN
+43235	MTN Irancell	mtnirancell			IRAN
+43250	Shatel Mobile	shatelmobile			IRAN
+43270	MCI-GPRS	mcinet			IRAN
+43293	MCI-GPRS	mcinet			IRAN
+43405	Ucell	internet			Uzbekistan
+43407	UMS	internet.ums.uz	ums	ums	Uzbekistan
+43408	UzMobile	internet.uzmobile.uz			Uzbekistan
+43601	Tcell	default			Tajikistan
+43602	Tcell	default			Tajikistan
+43603	Megafon	default			Tajikistan
+43604	Babilon-M	default			Tajikistan
+43605	Tacom	default			Tajikistan
+43612	Tcell	default			Tajikistan
+43701	Beeline	internet.beeline.kz	@internet.beeline	beeline	Kyrgyzstan
+43703	Fonex	default			Kyrgyzstan
+43705	Megacom	internet			Kyrgyzstan
+43709	O	default			Kyrgyzstan
+43801	MTS	default			Turkmenistan
+43802	TM-Cell	default			Turkmenistan
+44000	EMobile	emb.ne.jp	em	em	Japan
+44010	OCN	lte-d.ocn.ne.jp	mobileid@ocn	mobile	Japan
+44010	OCN	3g-d-2.ocn.ne.jp	mobileid@ocn	mobile	Japan
+44010	Iijmio	iijmio.jp	mio@iij	iij	Japan
+44010	Mineo	mineo-d.jp	mineo@k-opti.com	mineo	Japan
+44010	Nifmo	mda.nifty.com	mda@nifty	nifty	Japan
+44010	Nifmo	mdb.nifty.com	mdb@nifty	nifty	Japan
+44010	DMM	vmobile.jp			Japan
+44010	DMM	dmm@dmm.com	dmm		Japan
+44010	Hiho	vmobile.jp	lte@hi-ho	hi-ho	Japan
+44010	Excite	vmobile.jp	bb@excite.co.jp	excite	Japan
+44010	Biglobe	biglobe.jp	user	0	Japan
+44010	DTI	dti.jp	dti	dti	Japan
+44010	DTI	dream.jp	user@dream.jp	dti	Japan
+44010	Wireless gate	xi01.wi-gate.net	wg@sim	wg	Japan
+44010	Wireless gate	foma01.wi-gate.net	wg@sim	wg	Japan
+44010	Rmobile	rmobile.jp	rm	0	Japan
+44010	Rmobile	vdm.jp	rakuten@vdm	vrkt	Japan
+44010	U-mobile	umobile.jp	umobile@umobile.jp	umobile	Japan
+44010	freetel	freetel.link	freetel@freetel.link	freetel	Japan
+44010	Pointy	lte-mobile.jp	id@ds.pointy.jp	password	Japan
+44010	Asahi net	lte.mobac.net	d@w.asahinet.jp	0	Japan
+44010	Asahi net	3g.mobac.net	d@w3.asahinet.jp	0	Japan
+44010	Asahi net	lte.mobac.net	d@x.asahinet.jp	0	Japan
+44010	Asahi net	3g.mobac.net	d@x3.asahinet.jp	0	Japan
+44010	Woderlink	lte.fenics.jp	wl@s.lte.fenics.jp	p123456w	Japan
+44010	Wonderlink	vmobile.jp	wl@wlte.net	p123456w	Japan
+44010	B-mobile	bmobile.ne.jp	bmobile@4g	bmobile	Japan
+44010	B-mobile	bmobile.ne.jp	bmobile@xsim	bmobile	Japan
+44010	B-mobile	bmobile.ne.jp	bmobile@ios	bmobile	Japan
+44010	B-mobile	bmobile.ne.jp	bmobile@spd	bmobile	Japan
+44010	istrm	istrm.jp	user@istrm	istrm	Japan
+44010	Pointy	f1.mobile.ne.jp	id@ds.pointy.jp	password	Japan
+44020	Y!mobile	plus.acs.jp	ym	ym	Japan
+44050	Mineo	mineo.jp	mineo@k-opti.com	mineo	Japan
+44050	Uqmobile	uqmobile.jp	uq@uqmobile.jp	uq	Japan
+45005	SKT LTE	lte.sktelecom.com			Korea
+45005	SK Telecom	web.sktelecom.com			Korea
+45006	LG U+ LTE	lnternet.lguplus.co.kr			Korea
+45008	KT LTE	lte.ktfwing.com			Korea
+45011	SKT 3G INTERNET	web.sktelecom.com			Korea
+45201	Mobifone	m-wap	mms	mms	Vietnam
+45202	Vinaphone	m3-world	mms	mms	Vietnam
+45204	Viettel	e-connect			Vietnam
+45205	Vietnamobile	internet			Vietnam
+45205	Vietnamobile	wap			Vietnam
+45207	BeeLine	internet	mms		Vietnam
+45207	Gmobile	internet			Vietnam
+45208	e-internet	e-internet			Vietnam
+45400	HKCSL	hkcsl			HongKong
+45400	SUNMobile	SUNMobile			HongKong
+45400	CSL	mobile			HongKong
+45402	one2free	mobile			HongKong
+45402	NWMOBILE	NWMOBILE			HongKong
+45403	3HK	mobile.lte.three.com.hk			HongKong
+45403	3HK	mobile.three.com.hk			HongKong
+45403	CTNET	ctnet	ctnet@mycdma.cn	vnet.mobi	HongKong
+45404	3HK	web-g.three.com.hk			HongKong
+45404	CTNET	ctnet	ctnet@mycdma.cn	vnet.mobi	HongKong
+45406	Smartone	smartone			HongKong
+45407	China Unicom	3gnet			HongKong
+45410	NewWorld	internet			HongKong
+45412	CMHK	cmhk			HongKong
+45413	CMHK	cmhk			HongKong
+45415	Smartone	SmarTone-Vodafone			HongKong
+45416	PCCW(GPRS)	pccwdata			HongKong
+45418	CSL	lte.internet			HongKong
+45419	PCCW	pccw			HongKong
+45423	lycamobile	data.lycamobile.hk	lmhk	plus	HongKong
+45500	SmarTone	smartgprs			Macau
+45501	CTM	ctm-mobile			Macau
+45502	CTNET	ctnet	ctnet@mycdma.cn	vnet.mobi	Macau
+45503	3DB	web.hutchisonmacau.com			Macau
+45504	CTM Mobile	ctm-mobile			Macau
+45507	CTNET	ctnet	ctnet@mycdma.cn	vnet.mobi	Macau
+45507	CTWAP	ctwap	ctwap@mycdma.cn	vnet.mobi	Macau
+45601	Mobitel	cellcard			Cambodia
+45602	Hello	hello			Cambodia
+45602	Hello	smart			Cambodia
+45604	QB	wap			Cambodia
+45604	QB	cellcard			Cambodia
+45605	Smart	smart			Cambodia
+45606	Smart	smart			Cambodia
+45608	Metfone	metfone			Cambodia
+45609	Beeline	beeline			Cambodia
+45618	Mfone	mfone			Cambodia
+45618	Mfone	cellcard			Cambodia
+45701	LTC	default			Lao People's Democratic Republic
+45702	ETL	default			Lao People's Democratic Republic
+45703	Unitel	default			Lao People's Democratic Republic
+45708	Beeline	default			Lao People's Democratic Republic
+46000	CMCC	cmnet	guest	guest	China
+46001	China Unicom	3gnet			China
+46002	CMCC	cmnet	guest	guest	China
+46003	China Telecom	ctnet	ctnet@mycdma.cn	vnet.mobi	China
+46007	CMCC	cmnet	guest	guest	China
+46011	China Telecom	ctlte			China
+46601	FET	internet			Taiwan
+46603	FET	internet			Taiwan
+46605	APTG	internet			Taiwan
+46610	FET	internet			Taiwan
+46611	CHT	internet			Taiwan
+46612	AMBIT	internet			Taiwan
+46688	FET-KGT	internet			Taiwan
+46689	VIBO	internet			Taiwan
+46689	T STAR	internet			Taiwan
+46692	CHT	internet			Taiwan
+46693	TWN-Mobitai	internet			Taiwan
+46697	TWN	internet			Taiwan
+46699	TWN-TAT	internet			Taiwan
+47001	Grameenphone	gpinternet			Bangladesh
+47002	Robi	internet			Bangladesh
+47003	Banglalink	blweb			Bangladesh
+47004	Teletalk	wap			Bangladesh
+47007	Airtel	internet			Bangladesh
+47040	Teletalk	wep			Bangladesh
+47201	Dhiraagu	internet.dhimobile			Maldives
+47202	Wataniya	WataniyaNet			Maldives
+50210	DiGi Internet	diginet			Malaysia
+50212	Maxis Internet	unet	maxis	wap	Malaysia
+50213	TM Touch	internet			Malaysia
+50216	Digi	diginet			Malaysia
+50217	Maxis Internet	max4g	maxis	wap	Malaysia
+50218	U-Mobile	my3g			Malaysia
+50219	Celcom 3G	celcom3g			Malaysia
+502142	Maxis Internet	max4g	maxis	wap	Malaysia
+502143	DiGi Internet	diginet			Malaysia
+502145	Celcom Internet	celcom4g			Malaysia
+502146	DiGi Internet	diginet			Malaysia
+502147	Maxis Internet	max4g	maxis	wap	Malaysia
+502148	Celcom Internet	celcom4g			Malaysia
+502152	YES	yesnet			Malaysia
+50501	Telstra	telstra.internet			Australia
+50501	ALDI Mobile	mdata.net.au			Australia
+50502	Optus	yesinternet			Australia
+50502	iiNet	internet			Australia
+50502	Virgin	VirginInternet			Australia
+50502	Exetel	exetel1			Australia
+50502	DODO	4GLTE			Australia
+50502	DODO	dodolns1			Australia
+50502	TPG Mobile	internet			Australia
+50502	Optus	connect			Australia
+50503	Vodafone	live.vodafone.com			Australia
+50506	Three	3netaccess			Australia
+50507	VF Internet	vfinternet.au			Australia
+50511	Telstra Internet	Telstra.wap			Australia
+50512	3Internet	3netaccess			Australia
+50512	3	3services			Australia
+50514	AAPT	vfinternet.au			Australia
+50519	LM AU	data.lycamobile.com.au			Australia
+50571	Telstra Internet	Telstra.wap			Australia
+50572	Telstra	Telstra.wap			Australia
+50588	VF Internet	vfinternet.au			Australia
+50590	Optus Internet	internet			Australia
+51001	Indosat 3G	indosat3g	indosat	indosat	Indonesia
+51001	Indosat-SNS	indosatgprs			Indonesia
+51008	AXIS	axis	axis	axis	Indonesia
+51010	TELKOMSEL	internet			Indonesia
+51011	XL Axiata	Internet			Indonesia
+51021	Indosat-SNS	indosatgprs			Indonesia
+51088	Bolt	Internet			Indonesia
+51089	3	3data	3gprs	3gprs	Indonesia
+51401	Telin	default			Timor-Leste
+51402	Timor Telecom	default			Timor-Leste
+51403	Viettel	default			Timor-Leste
+51501	SUN	minternet			Philippines
+51502	Globe	http.globe.com.ph			Philippines
+51502	Globe	internet.globe.com.ph			Philippines
+51503	SMART	smartbro			Philippines
+51505	SUN	minternet			Philippines
+51505	SUN WAP GPRS	MINTERNET			Philippines
+51505	Sun Streaming	minternet			Philippines
+51509	SmartBro	SMARTBRO			Philippines
+51518	RED Internet	redinternet			Philippines
+52000	TRUE	internet	True	True	Thailand
+52000	My CAT	internet			Thailand
+52000	TRUE-H	internet	true	true	Thailand
+52001	AIS	internet	ais	ais	Thailand
+52003	AIS	internet	ais	ais	Thailand
+52004	TRUE	internet	True	True	Thailand
+52005	DTAC	www.dtac.co.th			Thailand
+52015	TOT	internet			Thailand
+52015	I-Mobile 3GX	internet			Thailand
+52018	DTAC	www.dtac.co.th			Thailand
+52099	TRUE	internet	True	True	Thailand
+52500	SingTel	hicard			Singapore
+52501	SingTel	e-ideas			Singapore
+52501	SingTel	hicard			Singapore
+52502	SingTel	e-ideas			Singapore
+52502	SingTel	hicard			Singapore
+52503	MobileOne	sunsurf	65		Singapore
+52503	MobileOne	prepaidbb			Singapore
+52503	MobileOne	sunsurfmcard			Singapore
+52503	MobileOne	miworld	65	user123	Singapore
+52505	MaxMobile Prepaid	shppd			Singapore
+52505	StarHub	shinternet			Singapore
+52802	B-Mobile	bmobilewap			Brunei
+52811	DST Mobile	dst.internet			Brunei
+53001	Vodafone	vodafone			New Zealand
+53001	Orcon	www.orcon.net.nz			New Zealand
+53001	Vodafone	www.vodafone.net.nz			New Zealand
+53002	Telecom	internet.telecom.co.nz			New Zealand
+53002	Digital Island	internet.telecom.co.nz			New Zealand
+53005	Spark NZ	internet			New Zealand
+53024	2Degrees	internet			New Zealand
+53602	Digicel	default			Nauru
+53701	BeMobile	default			Papua New Guinea
+53703	PNG WEB	internet.digicelpng.com			Papua New Guinea
+53901	U-Call	default			Tonga
+53943	Shoreline Communication	default			Tonga
+53988	Digicel	default			Tonga
+54001	BREEZE	default			Solomon Islands
+54002	BeMobile	default			Solomon Islands
+54100	AIL	default			Vanuatu
+54101	SMILE	default			Vanuatu
+54105	Digicel	default			Vanuatu
+54201	Vodafone	default			Fiji
+54202	Digicel	default			Fiji
+54411	Bluesky	default			American Samoa
+54501	Kiribati - TSKL	default			Kiribati
+54509	Kiribati - Frigate Net	default			Kiribati
+54601	Mobilis	default			New Caledonia
+54720	Vini	default			French Polynesia
+54801	Telecom Cook	default			Cook Islands
+54900	Digicel	web.digicelsamoa.ws			Samoa
+54901	Digicel	default			Samoa
+54927	Bluesky	default			Samoa
+55001	FSMTC	default			Micronesia
+55101	MINTA	default			Marshall islands
+55201	PNCC	default			Palau
+55280	Palau Mobile	default			Palau
+60201	MobiNil	mobinilweb			Egypt
+60202	Vodafone	internet.vodafone.net	internet	internet	Egypt
+60203	Etisalat	Etisalat			Egypt
+60301	Mobilis	internet	internet	internet	Algeria
+60302	Djezzy	djezzy.internet			Algeria
+60303	Nedjma	internet	nedjma	nedjma	Algeria
+60400	Meditel	www.internet1.meditel.ma	MEDINET	MEDINET	Morocco
+60401	IAM	www.iamgprs2.ma	VIDE	VIDE	Morocco
+60402	INWI	www.inwi.ma	WANA	WANA	Morocco
+60501	ORANGE	keygp			Tunisia
+60502	TELECO	internet.tn			Tunisia
+60503	TUNISIANA	internet.tunisiana.com			Tunisia
+60600	Libyana	default			Libya
+60601	Madar	default			Libya
+60602	Al-Jeel Phone	default			Libya
+60603	Libya Phone	default			Libya
+60606	Hatef Libya	default			Libya
+60701	Gamcel	default			Gambia
+60702	Africel	default			Gambia
+60703	Comium	default			Gambia
+60704	QCell	default			Gambia
+60801	Orange Web SN	internet	internet	internet	Senegal
+60802	Tigo Internet SN	web.sentel.com			Senegal
+60901	Mattel	default			Mauritania
+60902	Chinguitel	default			Mauritania
+60910	Mauritel	default			Mauritania
+61002	Orange ML	internet	internet	internet	Mali
+61101	Orange S.A.	default			Guinea
+61102	Sotelgui	default			Guinea
+61103	Telecel Guinee	default			Guinea
+61104	MTN	default			Guinea
+61105	Cellcom	default			Guinea
+61202	Moov Internet	moov			CI
+61203	Orange	orangecidata			CI
+61205	MTN Internet CI	web.mtn.ci	vide	vide	CI
+61301	Telmob	default			Burkina Faso
+61302	Airtel	default			Burkina Faso
+61303	Telecel Faso	default			Burkina Faso
+61401	Celtel	WEB.NE.CELTEL.COM			Niger
+61401	Zain	Internet.ne.zain.com			Niger
+61401	Web	web			Niger
+61404	Orange Internet	orange.ne			Niger
+61501	Togo Cell	default			Togo
+61503	Moov	default			Togo
+61601	Libercom	default			Benin
+61602	Moov	default			Benin
+61603	MTN	default			Benin
+61604	BBCOM	default			Benin
+61605	Glo	default			Benin
+61701	Orange Internet	orange			Mauritius
+61710	Emtel	web	cell number	MMSC	Mauritius
+61801	Lonestar Cell	default			Liberia
+61802	Libercell	default			Liberia
+61804	Comium	default			Liberia
+61807	Cellcom	default			Liberia
+61820	LIBTELCO	default			Liberia
+61901	Airtel	default			Sierra Leone
+61902	Tigo	default			Sierra Leone
+61903	Africell	default			Sierra Leone
+61904	Comium	default			Sierra Leone
+61905	Africell	default			Sierra Leone
+61925	Mobitel	default			Sierra Leone
+62000	Glo	glowap			Ghana
+62001	MTN Internet GH	internet			Ghana
+62002	Vodafone	browse			Ghana
+62003	Tigo Internet GH	web.tigo.com.gh			Ghana
+62006	Airtel	internet			Ghana
+62120	Zain NG	internet.ng.airtel.com	internet	internet	Nigeria
+62130	MTN-NG	web.gprs.mtnnigeria.net	web	web	Nigeria
+62150	Globacom	gloflat	flat	flat	Nigeria
+62150	Globacom	APN	flat	flat	Nigeria
+62160	etisalat	etisalat			Nigeria
+62201	Airtel	default			Chad
+62202	Tawali	default			Chad
+62203	Tigo	default			Chad
+62204	Salam	default			Chad
+62301	CTP	default			Central African Republic
+62302	TC	default			Central African Republic
+62303	Orange	default			Central African Republic
+62304	Nationlink	default			Central African Republic
+62402	Orange	orangecmgprs			Cameroon
+62501	CVMOVEL	default			Cape Verde
+62502	T+	default			Cape Verde
+62601	CSTmovel	default			Sao Tome and Principe
+62701	Orange	orangenet			G EQ
+62801	Libertis	default			Gabon
+62802	Moov	moov			Gabon
+62803	Airtel	internet.ga.zain.com			Gabon
+62804	Azur	default			Gabon
+62901	Airtel	internet.cg.airtel.com			Congo
+62910	Libertis Telecom	default			Congo
+63001	Vodacom	vodanet	vodalive		Congo
+63102	Unitel	internet.unitel.co.ao	guest	guest	Angola
+63102	UNITEL	default			Angola
+63104	MOVICEL	default			Angola
+63202	Areeba	default			Guinea-Bissau
+63203	Orange	internetogb			Guinea-Bissau
+63207	Guinetel	default			Guinea-Bissau
+63301	Cable & Wireless	default			Seychelles
+63302	Mediatech International	default			Seychelles
+63310	Airtel	default			Seychelles
+63401	Zain SD	internet			Sudan
+63510	MTN	default			Rwanda
+63512	Rwandatel	default			Rwanda
+63513	Tigo	default			Rwanda
+63514	Airtel	default			Rwanda
+63601	Internet	etc.com			Ethiopia
+63701	Telesom	default			Somalia
+63704	Somafone	default			Somalia
+63710	Nationlink	default			Somalia
+63725	Hormuud	default			Somalia
+63730	Golis	default			Somalia
+63757	Unittel	default			Somalia
+63760	Nationlink Telecom	default			Somalia
+63771	Somtel	default			Somalia
+63782	Telcom	default			Somalia
+63801	Evatis	default			Djibouti
+63902	Safaricom	Safaricom	web	web	Kenya
+63903	Airtel	internet			Kenya
+63907	Orange KE	orange internet	bew.orange.co.ke	bew.orange.co.ke	Kenya
+64002	TIGO	tigoweb			Tanzania
+64004	Airtel	internet			Tanzania
+64009	Celtel Tz	internet.tz.celtel.com	guest	guest	Tanzania
+64101	Airtel	internet			Uganda
+64110	MTN	yellopix.mtn.co.ug	guest	guest	Uganda
+64114	Orange	orange.ug			Uganda
+64201	Spacetel	default			Burundi
+64202	Tempo	default			Burundi
+64203	Onatel	default			Burundi
+64207	Smart Mobile	default			Burundi
+64208	HiTs Telecom	default			Burundi
+64282	Leo	default			Burundi
+64301	MCel	isp.mcel.mz	guest	guest	Mozambique
+64303	Movitel	default			Mozambique
+64304	Vodacom	default			Mozambique
+64501	Airtel	default			Zambia
+64502	MTN	default			Zambia
+64503	ZAMTEL	default			Zambia
+64601	Airtel	internet.mg.airtel.com			Madagascar
+64602	Orange	orangenet			Madagascar
+64700	Orange	orangerun			FIOT
+64702	Only Internet	onlyweb			FIOT
+64710	SFR	websfr			FIOT
+64901	Contract	internet			Netman
+64803	Telecel	default			Republic of Zimbabwe
+64804	Econet	default			Republic of Zimbabwe
+64901	MTC	ppsinternet	guest	guest	Namibia
+64901	MTC	default			Namibia
+64902	switch	default			Namibia
+64903	Leo	default			Namibia
+65001	TNM	default			Malawi
+65010	Airtel	default			Malawi
+65101	VCL	internet			Lesotho
+65201	Mascom	internet.mascom	guest	guest	Botswana
+65202	Orange	internet.orange.co.bw	guest	guest	Botswana
+65310	Swazi MTN	default			Swaziland
+65401	HURI	default			Comoros
+65501	VodaCom	internet			South Africa
+65502	Telkom	internet			South Africa
+65502	Telkom	telkominternet			South Africa
+65507	Cell C	internet			South Africa
+65507	Virgin	vdata			South Africa
+65510	MTN	mymtn			South Africa
+65519	RAIN-RttH	internet			South Africa
+65538	RAIN	rain			South Africa
+65701	Eritel	default			Eritrea
+70267	DigiCell	default			Belize
+70299	Smart	default			Belize
+70401	Claro	internet.ideasclaro			Guatemala
+70402	Tigo GT	broadband.tigo.gt			Guatemala
+70403	Movistar GT	internet.movistar.gt	movistargt	movistargt	Guatemala
+70420	TIGO	internet.tigo.gt			Guatemala
+70430	MOVISTAR	internet.movistar.gt	movistargt	movistargt	Guatemala
+70601	CLARO SV	internet.ideasclaro			El Salvador
+70602	Digicel	web.digicelsv.com			El Salvador
+70604	Movistar SV	internet.movistar.sv	movistarsv	movistarsv	El Salvador
+70640	MOVISTAR	internet.movistar.sv	movistarsv	movistarsv	El Salvador
+71021	Claro NI	web.emovil	webemovil	webemovil	Nicaragua
+70800	Internet	internet.ideasclaro			Honduras
+70801	Internet	internet.ideasclaro			Honduras
+70802	INTERNET	internet.tigo.hn			Honduras
+70804	Digicel	web.digicelhn.com			Honduras
+70820	INTERNET	internet.tigo.hn			Honduras
+70840	Digicel	web.digicelhn.com			Honduras
+71021	Enitel WEB	internet.ideasalo.ni	internet	internet	Nicaragua
+71030	Movistar	internet.movistar.ni			Nicaragua
+71073	PCS ALO	internet.ideasalo.ni	internet	internet	Nicaragua
+710300	Movistar NI	internet.movistar.ni	movistarni	movistarni	Nicaragua
+710730	Enitel WEB	internet.ideasalo.ni	internet	internet	Nicaragua
+71201	ICE	kolbi3g			Costa Rica
+71202	KOLBI 3G	kolbi3g			Costa Rica
+71203	Internet CLARO CR	internet.ideasclaro			Costa Rica
+71204	Movistar INTERNET	internet.movistar.cr	movistarcr	movistarcr	Costa Rica
+71219	Internet Tuyo	tm7datos			Costa Rica
+71220	Internet Fulmovil	datos.fulmovil.cr			Costa Rica
+712190	Internet Tuyo	tm7datos			Costa Rica
+71401	Cable	apn01.cwpanama.com.pa			Panama
+71402	Movistar	internet.movistar.pa	movistarpa	movistarpa	Panama
+71403	WEB Claro	web.claro.com.pa	CLAROWEB	CLAROWEB	Panama
+71404	Digicel	web.digicelpanama.com			Panama
+71420	Movistar PA	internet.movistar.pa	movistarpa	movistarpa	Panama
+71440	Digicel	web.digicelpanama.com			Panama
+71606	Movistar PE	movistar.pe	movistar@datos	movistar	Peru
+71607	Nextel WAP	wap.nextel.com.pe			Peru
+71610	Claro peru	claro.pe	Claro	claro	Peru
+71615	Bitel	bitel			Peru
+71617	Entel PE	entel.pe			Peru
+71617	Entel Location	location.entel.pe			Peru
+72201	Quam_WEB	internet.movil	internet	internet	Argentina
+72207	Movistar	internet.gprs.unifon.com.ar	gprs	gprs	Argentina
+72231	Claro AR	igprs.claro.com.ar			Argentina
+72234	Personal	gprs.personal.com	gprs	gprs	Argentina
+72236	Nuestro:Internet	gprs.nuestro.com.ar	gprs		Argentina
+722310	Claro	igprs.claro.com.ar	clarogprs	clarogprs999	Argentina
+722340	Personal :Datos	datos.personal.com	gprs	adgj	Argentina
+722341	Personal Datos	datos.personal.com	datos	datos	Argentina
+72402	TIM	Tim.br			Brazil
+72403	TIM	tim.br	tim	tim	Brazil
+72404	TIM	Tim.br			Brazil
+72405	Claro	claro.com.br	claro	claro	Brazil
+72406	Vivo	zap.vivo.com.br	vivo	vivo	Brazil
+72407	CTBC	ctbc.br	ctbc	1212	Brazil
+72408	TIM	Tim.br	tim	tim	Brazil
+72410	Vivo	zap.vivo.com.br	vivo	vivo	Brazil
+72411	Vivo	zap.vivo.com.br	vivo	vivo	Brazil
+72415	Sercomtel	sercomtel.com.br	sercomtel	sercomtel	Brazil
+72416	Brasil Telecom	brt.br			Brazil
+72419	TelemigC GPRS	gprs.telemigcelular.com.br	celular	celular	Brazil
+72423	Vivo	zap.vivo.com.br	vivo	vivo	Brazil
+72424	Amazonia	gprs.amazoniacelular.com.br	celular	celular	Brazil
+72431	Oi	gprs.oi.com.br	oi	oi	Brazil
+72432	CTBC	ctbc.br	ctbc	1212	Brazil
+72433	CTBC	ctbc.br	ctbc	1212	Brazil
+72434	CTBC	ctbc.br	ctbc	1212	Brazil
+72439	Nextel WAP	wap.nextel3g.net.br			Brazil
+72454	Porto Seguro	portoconecta.br			Brazil
+73001	Entel PCS	imovil.entelpcs.cl			Chile
+73002	Movistar	web.tmovil.cl	web	web	Chile
+73003	Banda	bam.clarochile.cl	clarochile	clarochile	Chile
+73008	Internet	movil.vtr.com	vtrmovil	vtrmovil	Chile
+73007	Virgin	imovil.virginmobile.cl			Chile
+73009	Internet Nextel	wap.nextelmovil.cl			Chile
+73010	Entel	imovil.entelpcs.cl	entelpcs	entelpcs	Chile
+73212	Movistar INTERNET	internet.movistar.com.co	movistar	movistar	Colombia
+732101	COMCEL	internet.comcel.com.co	COMCELWEB	COMCELWEB	Colombia
+732102	Movistar internet	internet.movistar.com.co	movistar	movistar	Colombia
+732103	Tigo CO	web.colombiamovil.com.co			Colombia
+732103	Internet ETB	moviletb.net.co	etb	etb	Colombia
+732103	Internet Exito	movilexito.net.co			Colombia
+732103	UFFMOVIL	web.uffmovil.com			Colombia
+732103	UNE	www.une.net.co	une	une	Colombia
+732111	Tigo web	web.colombiamovil.com.co			Colombia
+732111	Internet ETB	moviletb.net.co	etb	etb	Colombia
+732111	Internet Exito	movilexito.net.co			Colombia
+732111	UFFMOVIL	web.uffmovil.com			Colombia
+732111	UNE	www.une.net.co	une	une	Colombia
+732123	Movistar	internet.movistar.com.co	movistar	movistar	Colombia
+732123	Virgin Mobile	web.vmc.net.co			Colombia
+732130	Avantel	lte.avantel.com.co			Colombia
+732187	ETB 4G	internetmovil.etb.net.co			Colombia
+73401	Digitel	internet.digitel.ve			Venezuela
+73402	Digitel	internet.digitel.ve			Venezuela
+73403	WEB	gprsweb.digitel.ve			Venezuela
+73404	Movistar	internet.movistar.ve			Venezuela
+73406	Movilnet	int.movilnet.com.ve			Venezuela
+73603	TIGO Internet	internet.tigo.bo			Bolivia
+74000	Porta	internet.movistar.ec			Ecuador
+74001	Porta	ba.amx			Ecuador
+73801	Digicel	default			Guyana
+73802	GT&T	default			Guyana
+74001	Movistar	navega.movistar.com.ec	movistar	movistar	Ecuador
+74002	CNT INTERNET	internet.cnt.net.ec			Ecuador
+74401	VOXINTERNET	vox.internet			Paraguay
+74402	Internet Claro	internet.ctimovil.com.py			Paraguay
+74404	TIGO PY	internet.tigo.py			Paraguay
+74405	Internet Personal	internet			Paraguay
+74602	Telesur	default			Suriname
+74603	Suriname:Digicel	web.digicelsr.com			Suriname
+74604	UNIQA	utsnet.uts.an			Suriname
+74604	3G Prepaid	3Gprep.uniqa.sr			Suriname
+74604	3G Light	3Glight.uniqa.sr			Suriname
+74604	3G Medium	3Gmedium.uniqa.sr			Suriname
+74604	3G Premium	3Gpremium.uniqa.sr			Suriname
+74801	Antel	prepago.ancel	bam	bam	Uruguay
+74801	Vera	ANTEL.LTE			Uruguay
+74807	Movistar UY	apnumt.movistar.com.uy	movistar	movistar	Uruguay
+74810	Claro UY	igprs.claro.com.uy	ctigprs	ctigprs999	Uruguay

@@ -92,6 +92,11 @@ print("      The script checks board_name and exits on anything else, so it is i
 #                                  live bearer keeps the APN it attached with
 #      etc/uci-defaults/99-mr600-lte - the wwan interface, the firewall zone, MM disabled
 #      etc/mr600-apn-table       - mcc+mnc -> APN, so no carrier is baked in
+#      etc/mr600-apn-mvno-table  - the vendor's own MVNO discriminators, derived from the modem's
+#                                  NetIspInfo.ini and consulted BEFORE the plain table; that table
+#                                  cannot express "which brand on this network", and for e.g. 31000
+#                                  (17 entries) its single answer is wrong for every MVNO there
+#      etc/mr600-apn-catalog     - the vendor's operator catalog, for the LuCI APN picker
 #      usr/bin/at-tty            - set a line speed and speak AT; busybox here has neither
 #                                  stty nor microcom. The binary is built by build.sh from
 #                                  files/usr/bin/at-tty.c with the just-built toolchain.
@@ -100,6 +105,14 @@ for src, dst, mode in [
     ("files/etc/hotplug.d/iface/30-lte-apn", "etc/hotplug.d/iface/30-lte-apn", 0o755),
     ("files/etc/uci-defaults/99-mr600-lte", "etc/uci-defaults/99-mr600-lte", 0o755),
     ("files/etc/mr600-apn-table", "etc/mr600-apn-table", 0o644),
+    ("files/etc/mr600-apn-mvno-table", "etc/mr600-apn-mvno-table", 0o644),
+    ("files/etc/mr600-apn-catalog", "etc/mr600-apn-catalog", 0o644),
+    ("files/usr/share/luci/menu.d/luci-app-mr600-apn.json",
+     "usr/share/luci/menu.d/luci-app-mr600-apn.json", 0o644),
+    ("files/usr/share/rpcd/acl.d/luci-app-mr600-apn.json",
+     "usr/share/rpcd/acl.d/luci-app-mr600-apn.json", 0o644),
+    ("files/www/luci-static/resources/view/mr600/apn.js",
+     "www/luci-static/resources/view/mr600/apn.js", 0o644),
 ]:
     s = os.path.join(HERE, src)
     if not os.path.isfile(s):

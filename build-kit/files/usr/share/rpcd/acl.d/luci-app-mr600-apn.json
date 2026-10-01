@@ -1,0 +1,14 @@
+{
+	"luci-app-mr600-apn": {
+		"description": "Grant access to the LTE modem's own operator catalog, so the APN can be picked rather than typed",
+		"read": {
+			"file": {
+				"/etc/mr600-apn-catalog": [ "read" ]
+			},
+			"uci": [ "network" ]
+		},
+		"write": {
+			"uci": [ "network" ]
+		}
+	}
+}

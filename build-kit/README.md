@@ -191,6 +191,25 @@ error):
 | `led_enable` hog on GPIO 3, active low | the board gates every LED on this pin; without it the LEDs stay dark even though the nodes are right |
 | `wwan0` MAC = `eth0+2` | the PR routes v1 into the v2 case, which uses `eth0+1`; separate values keep two devices on one LAN from colliding |
 
+Plus these rootfs files for the LTE modem: `/etc/init.d/lte-reset`,
+`/etc/uci-defaults/99-mr600-lte`, `/usr/bin/at-tty` (built by `build.sh` from
+`files/usr/bin/at-tty.c`), and three APN data files with a LuCI picker on top:
+
+| file | what it is |
+|---|---|
+| `/etc/mr600-apn-table` | 832 rows, `mccmnc -> apn`, from GNOME's `mobile-broadband-provider-info`. The automatic answer, and it has no duplicate keys by construction. |
+| `/etc/mr600-apn-mvno-table` | 208 rows of the vendor's own `MVNOType`/`MVNOData` entries, from the modem's `NetIspInfo.ini`. Consulted **first**, because it is the only source that can tell two brands on one network apart. |
+| `/etc/mr600-apn-catalog` | 1,604 rows, the vendor's operator catalog, for the picker below. |
+| `luci-app-mr600-apn` | menu + view + acl.d: an **Operator APN** picker under Network, so the override is a choice rather than a typed string. |
+
+The last two are one line in `apply-local-changes.py` each; regenerate all three tables from a
+fresh `NetIspInfo.ini` with `../tools/make-apn-mvno-table.py` (the source is a vendor artifact and
+is not committed - the tables carry its revision and digest in a header instead).
+
+Nothing here is guessed. `make-apn-mvno-table.py` **drops** an override whose pattern matches two
+different APNs rather than picking one, and `verify-image.sh` fails the build if the MVNO table is
+present but lacks IMSI rows, SPN rows, or its provenance header.
+
 ## The LTE modem
 
 Driven by the **standard `qmi` proto (uqmi)**, with the module prepared first by an init script.

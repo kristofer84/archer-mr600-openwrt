@@ -121,26 +121,42 @@ set_apn() {
 }
 
 APN_TABLE=/etc/mr600-apn-table
+# The vendor's own MVNO discriminators, derived from the modem's NetIspInfo.ini. Consulted BEFORE
+# APN_TABLE: that table is keyed mccmnc -> apn and cannot express "which brand on this network",
+# so for the 91 keys where the vendor distinguishes them it is the better answer. Empty or absent
+# is normal and simply falls through.
+APN_MVNO_TABLE=/etc/mr600-apn-mvno-table
 
-# Which network are we on? The IMSI's MCC/MNC is the SIM's home network, which is what the
-# table is keyed on; fall back to the registered network's PLMN when the SIM will not say.
-# The SIM's home network as a digit string: the IMSI's leading digits ARE mcc+mnc.
-# Fall back to the registered PLMN (its MNC needs zero-padding to two digits, because
-# uqmi reports 8 where the table - and the IMSI - have 08).
-home_mccmnc() {
-	local imsi mcc mnc i=0
-	# Retry: right after its reset the module does not always answer AT yet, and an empty
-	# IMSI silently falls through to the PLMN path (which is correct but less authoritative).
+# The SIM's full IMSI, or empty. Retried: right after its reset the module does not always answer
+# AT yet.
+read_imsi() {
+	local imsi i=0
 	while [ $i -lt 5 ]; do
 		imsi=$(at 'AT+CIMI' 2>/dev/null | tr -d '\r' | grep -E '^[0-9]{6,}$' | head -1)
-		[ -n "$imsi" ] && { echo "$imsi"; return 0; }
+		[ -n "$imsi" ] && { printf '%s' "$imsi"; return 0; }
 		sleep 2; i=$((i+1))
 	done
+	return 1
+}
+
+# The registered network's MCC/MNC as 5 or 6 digits. The MNC needs zero-padding to two digits,
+# because uqmi reports 8 where the table - and the IMSI - have 08.
+home_plmn() {
+	local mcc mnc
 	mcc=$(uqmi -s -d "$CTL" -t 3000 --get-serving-system 2>/dev/null |
 		sed -n 's/.*"plmn_mcc":\([0-9]*\).*/\1/p')
 	mnc=$(uqmi -s -d "$CTL" -t 3000 --get-serving-system 2>/dev/null |
 		sed -n 's/.*"plmn_mnc":\([0-9]*\).*/\1/p')
 	[ -n "$mcc" ] && [ -n "$mnc" ] && printf '%s%02d' "$mcc" "$mnc"
+}
+
+# Which network are we on? The IMSI's leading digits ARE mcc+mnc, so the SIM is authoritative when
+# it answers and the registered PLMN is the fallback. Returns one digit string that is either a
+# full IMSI or a 5/6 digit key - every caller takes a prefix of it, which is why it can be both.
+home_mccmnc() {
+	local imsi
+	imsi=$(read_imsi) && { printf '%s' "$imsi"; return 0; }
+	home_plmn
 }
 
 apn_from_table() {
@@ -152,11 +168,51 @@ apn_from_table() {
 	printf '%s' "$line"
 }
 
+# Does the vendor table discriminate anything for this network at all? Guards the EF_SPN read
+# below, which is otherwise a pointless AT round trip for the ~1,100 keys that have no entry.
+mvno_key_present() { # $1=type $2=k5 $3=k6
+	[ -r "$APN_MVNO_TABLE" ] || return 1
+	awk -F'\t' -v t="$1" -v k5="$2" -v k6="$3" '$1 == t && ($3 == k5 || $3 == k6) { n++ } END { exit n ? 0 : 1 }' "$APN_MVNO_TABLE"
+}
+
+# EF_SPN (0x6F46) as lower-case hex, with the display-condition byte dropped and the 0xFF padding
+# trimmed. Deliberately NOT decoded: the vendor's SPN patterns are compared as bytes, so GSM 7-bit
+# and UCS2 both stay out of the boot path. Absent on many SIMs - this bench SIM answers
+# "+CRSM: 103,0" for EF_GID1 - and absence is not an error.
+spn_hex() {
+	local r
+	r=$(at 'AT+CRSM=176,28486,0,0,17' 2>/dev/null | tr -d '\r' |
+		sed -n 's/^+CRSM: 144,0,"\([0-9A-Fa-f]*\)".*/\1/p' | head -1)
+	[ -n "$r" ] || return 1
+	printf '%s' "${r#??}" | tr 'A-F' 'a-f' | sed 's/\(ff\)*$//'
+}
+
+# The longest MVNO override whose PATTERN the value starts with. IMSI patterns begin with their own
+# MCC/MNC and so are self-checking; SPN patterns do not carry one, so the key must be given and
+# must match - a US SPN must not be allowed to answer for a Swedish SIM.
+mvno_lookup() { # $1=type $2=value $3=k5 $4=k6
+	local line
+	[ -n "$2" ] || return 1
+	[ -r "$APN_MVNO_TABLE" ] || return 1
+	line=$(awk -F'\t' -v t="$1" -v v="$2" -v k5="$3" -v k6="$4" '
+		$1 == t && index(v, $2) == 1 && (t != "SPN" || $3 == k5 || $3 == k6) {
+			if (length($2) > best) { best = length($2); out = $0 }
+		}
+		END { if (best) print out }' "$APN_MVNO_TABLE")
+	[ -n "$line" ] || return 1
+	printf '%s' "$line"
+}
+
 # Resolve the APN. An explicit network.wwan0.apn wins (so a carrier can always be forced);
 # otherwise derive it from the SIM. Nothing is baked in for any one carrier, and an unknown
 # carrier is left with no APN and a loud warning rather than a wrong one.
+#
+# Order matters. The vendor's MVNO entries come first because they are the only source that can
+# tell two brands on one network apart - for e.g. 31000 (17 entries) and 21403 (16) the plain
+# table's single answer is wrong for every MVNO on the network. IMSI is tried before SPN: it is
+# exact, it is already read, and its pattern carries its own key.
 resolve_apn() {
-	local override key hit
+	local override imsi key k5 k6 hit v spn
 	override=$(uci -q get network.wwan0.apn)
 	[ -n "$override" ] || override=$(uci -q get network.wwan.apn)
 	if [ -n "$override" ]; then
@@ -165,8 +221,24 @@ resolve_apn() {
 	fi
 
 	# 5 digits (MCC + 2-digit MNC) is the common case; 6 covers 3-digit MNCs.
-	key=$(home_mccmnc)
-	for k in "$(echo "$key" | cut -c1-5)" "$(echo "$key" | cut -c1-6)"; do
+	imsi=$(read_imsi)
+	if [ -n "$imsi" ]; then key="$imsi"; else key=$(home_plmn); fi
+	k5=$(printf '%s' "$key" | cut -c1-5)
+	k6=$(printf '%s' "$key" | cut -c1-6)
+
+	hit=$(mvno_lookup IMSI "$imsi" "$k5" "$k6")
+	if [ -z "$hit" ] && mvno_key_present SPN "$k5" "$k6"; then
+		spn=$(spn_hex) && hit=$(mvno_lookup SPN "$spn" "$k5" "$k6")
+	fi
+	if [ -n "$hit" ]; then
+		v=$(printf '%s' "$hit" | cut -f4)
+		[ -n "$v" ] && {
+			logger -t lte "APN from vendor MVNO entry ($(printf '%s' "$hit" | cut -f1)): $v"
+			printf '%s' "$v"; return 0
+		}
+	fi
+
+	for k in "$k5" "$k6"; do
 		hit=$(apn_from_table "$k") && { printf '%s\n' "$hit" | cut -f2; return 0; }
 	done
 

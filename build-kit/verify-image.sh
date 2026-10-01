@@ -48,7 +48,10 @@ done
 
 echo "==> the LTE payload, in base-files"
 for f in etc/init.d/lte-reset etc/hotplug.d/iface/30-lte-apn etc/uci-defaults/99-mr600-lte \
-         etc/mr600-apn-table usr/bin/at-tty; do
+         etc/mr600-apn-table etc/mr600-apn-mvno-table etc/mr600-apn-catalog usr/bin/at-tty \
+         usr/share/luci/menu.d/luci-app-mr600-apn.json \
+         usr/share/rpcd/acl.d/luci-app-mr600-apn.json \
+         www/luci-static/resources/view/mr600/apn.js; do
 	if [ -e "$BLF/$f" ]; then ok "base-files/$f"; else bad "MISSING base-files/$f"; fi
 done
 
@@ -80,6 +83,44 @@ grep -q 'persist_apn "$apn"' "$BLF/etc/init.d/lte-reset" ||
 awk -F'\t' '$1 == "24008" { print $2 }' "$BLF/etc/mr600-apn-table" | grep -q . ||
 	bad "the 24008 row has no APN"
 ok "the APN reaches uci"
+
+echo "==> the MVNO overrides, which are consulted before the plain table"
+# Fine to be absent - lte-reset falls through to the plain table. What is NOT fine is present
+# but empty or malformed: it would be consulted first and return nothing for every SIM.
+MVNO="$BLF/etc/mr600-apn-mvno-table"
+if [ -e "$MVNO" ]; then
+	n=$(awk -F'\t' '!/^#/ && NF >= 4' "$MVNO" | wc -l)
+	[ "$n" -gt 100 ] && ok "the MVNO table has $n rows" || bad "the MVNO table has only $n rows"
+	awk -F'\t' '$1 == "IMSI"' "$MVNO" | grep -q . && ok "  ... IMSI patterns present" \
+		|| bad "  no IMSI patterns - the table was generated from the wrong source"
+	awk -F'\t' '$1 == "SPN"' "$MVNO" | grep -q . && ok "  ... SPN patterns present" \
+		|| bad "  no SPN patterns - the table was generated from the wrong source"
+	grep -q 'source revision' "$MVNO" && ok "  ... provenance header present" \
+		|| bad "  no provenance header: which NetIspInfo.ini revision is this?"
+else
+	ok "no MVNO table - plain mccmnc lookup only (lte-reset falls through)"
+fi
+grep -q 'APN_MVNO_TABLE=' "$BLF/etc/init.d/lte-reset" ||
+	bad "lte-reset does not reference the MVNO table"
+grep -q 'resolve_apn()' "$BLF/etc/init.d/lte-reset" && ok "lte-reset looks for MVNO overrides first"
+
+echo "==> the APN resolution logic, against the real tables"
+# The cheapest gate here, and the one that covers what an image check cannot: the resolution
+# *logic*. A wrong answer is not an error message, it is a link that attaches with another
+# network's APN. The test needs no router and no SIM.
+TESTSCRIPT="$KIT/../tools/test-apn-resolve.sh"
+if [ -x "$TESTSCRIPT" ]; then
+	LOG=$(mktemp)
+	if "$TESTSCRIPT" >"$LOG" 2>&1; then
+		ok "$(grep -c '  ok  ' "$LOG") cases pass (plain table, IMSI override, SPN override, key guard, ambiguity)"
+	else
+		bad "APN resolution regressed - see below"
+		sed 's/^/     /' "$LOG" | grep -E 'FAIL|passed' >&2
+	fi
+	rm -f "$LOG"
+else
+	bad "tools/test-apn-resolve.sh is missing or not executable"
+fi
 
 echo "==> variant"
 # Judged from what was seeded into THIS tree, not from whether the seed file happens to be

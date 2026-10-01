@@ -1,0 +1,15 @@
+{
+	"admin/network/mr600-apn": {
+		"title": "Operator APN",
+		"order": 61,
+		"action": {
+			"type": "view",
+			"path": "mr600/apn"
+		},
+		"depends": {
+			"acl": [
+				"luci-app-mr600-apn"
+			]
+		}
+	}
+}

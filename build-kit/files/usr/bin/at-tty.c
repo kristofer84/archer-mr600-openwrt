@@ -11,7 +11,11 @@
  *   mipsel-openwrt-linux-musl-gcc -static -Os -o at-tty at-tty.c
  *
  * Usage:
- *   at-tty /dev/ttyUSB1 115200 'AT' 'AT+CGREG?' 'AT+CGDCONT?'
+ *   at-tty /dev/ttyUSB2 115200 'AT' 'AT+CGREG?' 'AT+CGDCONT?'
+ *
+ * NB: the AT port is /dev/ttyUSB2 (USB interface 1-1:1.2). Interface 1-1:1.1 is the module's
+ * ADB interface (class ff/42/01) and does not answer AT - an earlier version of this comment
+ * pointed at ttyUSB1, which is what lte-reset's blanket `option1/new_id` exposes there.
  */
 
 #include <stdio.h>
