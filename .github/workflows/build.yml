@@ -26,7 +26,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       # The runner only has ~14 GB free by default; an OpenWrt build wants ~20 GB+.
       - name: Free disk space
@@ -82,7 +82,7 @@ jobs:
           subject-path: out/*.bin
 
       - name: Upload workflow artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: openwrt-mr600-v1-eu
           path: out/
